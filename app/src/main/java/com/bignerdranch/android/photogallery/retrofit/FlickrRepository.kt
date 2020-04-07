@@ -1,5 +1,6 @@
 package com.bignerdranch.android.photogallery.retrofit
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.bignerdranch.android.photogallery.api.flickr.FlickrApi
@@ -42,7 +43,7 @@ class FlickrRepository {
         flickrRequest.enqueue(
             object: Callback<FlickrResponse> {
                 override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
-                    TODO("Not yet implemented")
+                    Log.e(TAG, "fetch(): failed to fetch photos", t)
                 }
 
                 override fun onResponse(
@@ -53,6 +54,8 @@ class FlickrRepository {
                     var galleryItems: List<GalleryItem> =
                         photoResponse?.galleryItems ?: mutableListOf()
                     galleryItems = galleryItems.filterNot { it.url.isBlank() }
+
+                    Log.d(TAG, "fetch(): galleryItems loaded, ${galleryItems.size} items")
 
                     responseLiveData.value = galleryItems
                 }
