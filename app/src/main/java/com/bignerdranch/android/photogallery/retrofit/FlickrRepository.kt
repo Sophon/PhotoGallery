@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.bignerdranch.android.photogallery.api.flickr.FlickrApi
 import com.bignerdranch.android.photogallery.api.flickr.FlickrResponse
+import com.bignerdranch.android.photogallery.api.flickr.PhotoInterceptor
 import com.bignerdranch.android.photogallery.api.flickr.PhotoResponse
 import com.bignerdranch.android.photogallery.model.GalleryItem
+import okhttp3.OkHttpClient
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -18,9 +20,14 @@ class FlickrRepository {
     //endregion
 
     init {
-        val retrofit = Retrofit.Builder()
+        val client: OkHttpClient = OkHttpClient.Builder()
+            .addInterceptor(PhotoInterceptor())
+            .build()
+
+        val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl("https://api.flickr.com/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
 
         flickrApi = retrofit.create(FlickrApi::class.java)
