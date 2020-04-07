@@ -5,6 +5,6 @@ import retrofit2.http.GET
 
 interface FlickrApi {
 
-    @GET("services/rest/?method=flickr.interestingness.getList")
+    @GET("services/rest?method=flickr.interestingness.getList")
     fun fetchInterestingness(): Call<FlickrResponse>
 }
