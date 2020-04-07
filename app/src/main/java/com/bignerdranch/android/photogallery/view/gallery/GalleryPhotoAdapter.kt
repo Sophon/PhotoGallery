@@ -1,12 +1,8 @@
 package com.bignerdranch.android.photogallery.view.gallery
 
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.ListItemGalleryBinding
 import com.bignerdranch.android.photogallery.model.GalleryItem
 
@@ -28,9 +24,8 @@ internal class PhotoAdapter(private val galleryItems: List<GalleryItem>)
 
     override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
         val galleryItem: GalleryItem = galleryItems[position]
-        val placeHolder: Drawable = ColorDrawable()
 
-        holder.bind(placeHolder)
+        holder.bind(galleryItem)
     }
 
     override fun getItemCount(): Int = galleryItems.count()
