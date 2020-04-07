@@ -1,4 +1,4 @@
-package com.bignerdranch.android.photogallery.view
+package com.bignerdranch.android.photogallery.view.gallery
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
 
-private var _binding: FragmentPhotoGalleryBinding? = null
-private val binding get() = _binding!!
-
 class PhotoGalleryFragment: Fragment() {
+    //region Private vars
+    private lateinit var binding: FragmentPhotoGalleryBinding
+    //endregion
 
     //region Lifecycle
     override fun onCreateView(
@@ -19,18 +19,11 @@ class PhotoGalleryFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentPhotoGalleryBinding.inflate(inflater, container, false)
+        binding = FragmentPhotoGalleryBinding.inflate(inflater, container, false)
 
         binding.galleryRecyclerView.layoutManager = GridLayoutManager(context, 3)
 
         return binding.root
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        _binding = null
-    }
-
     //endregion
 }
