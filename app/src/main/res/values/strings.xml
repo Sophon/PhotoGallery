@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">PhotoGallery</string>
+
+<!--    Gallery menu-->
+    <string name="search">Search</string>
+    <string name="start_polling">Start polling</string>
+    <string name="stop_polling">Stop polling</string>
+    <string name="clear_search">Clear search</string>
 </resources>
