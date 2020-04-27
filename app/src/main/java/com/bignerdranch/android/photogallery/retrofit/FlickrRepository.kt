@@ -37,8 +37,19 @@ class FlickrRepository {
     //region Public funs
     fun fetchInterestingPhotos()
         : LiveData<List<GalleryItem>> {
+        return getPhotos(flickrApi.fetchInterestingness())
+    }
+
+    fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
+        return getPhotos(flickrApi.searchPhotos(query))
+    }
+    //endregion
+
+    //region Private funs
+    private fun getPhotos(
+        flickrRequest: Call<FlickrResponse> = flickrApi.fetchInterestingness()
+    ): LiveData<List<GalleryItem>> {
         val responseLiveData: MutableLiveData<List<GalleryItem>> = MutableLiveData()
-        flickrRequest = flickrApi.fetchInterestingness()
 
         flickrRequest.enqueue(
             object: Callback<FlickrResponse> {
