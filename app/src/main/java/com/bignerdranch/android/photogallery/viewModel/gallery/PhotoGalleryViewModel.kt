@@ -1,13 +1,12 @@
 package com.bignerdranch.android.photogallery.viewModel.gallery
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.*
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.retrofit.FlickrRepository
+import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
 
-class PhotoGalleryViewModel: ViewModel() {
+class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
     //region Public vars
     val galleryItemLiveData: LiveData<List<GalleryItem>>
     //endregion
@@ -18,6 +17,8 @@ class PhotoGalleryViewModel: ViewModel() {
     //endregion
 
     init {
+        searchQueryLiveData.value = QueryPreferences.getStoredQuery(app)
+
         galleryItemLiveData =
             Transformations.switchMap(searchQueryLiveData) { searchTerm ->
                 if(searchTerm.isBlank()) {
@@ -30,6 +31,18 @@ class PhotoGalleryViewModel: ViewModel() {
 
     //region Public funs
     fun searchPhotos(query: String) {
+        changeQuery(query)
+
+        QueryPreferences.setStoredQuery(app, query)
+    }
+
+    fun liveSearchPhotos(query: String) {
+        changeQuery(query)
+    }
+    //endregion
+
+    //region Private funs
+    private fun changeQuery(query: String) {
         searchQueryLiveData.value = query
     }
     //endregion
