@@ -17,6 +17,8 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
     //endregion
 
     init {
+        searchQueryLiveData.value = QueryPreferences.getStoredQuery(app)
+
         galleryItemLiveData =
             Transformations.switchMap(searchQueryLiveData) { searchTerm ->
                 if(searchTerm.isBlank()) {
