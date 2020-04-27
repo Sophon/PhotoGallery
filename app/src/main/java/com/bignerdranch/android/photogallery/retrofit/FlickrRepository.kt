@@ -38,6 +38,10 @@ class FlickrRepository {
         return getPhotos(flickrApi.fetchInterestingness())
     }
 
+    fun searchPhotosRequest(query: String): Call<FlickrResponse> {
+        return flickrApi.searchPhotos(query)
+    }
+
     fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
         return getPhotos(flickrApi.searchPhotos(query))
     }
