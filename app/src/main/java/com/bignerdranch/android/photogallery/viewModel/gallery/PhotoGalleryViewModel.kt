@@ -1,6 +1,7 @@
 package com.bignerdranch.android.photogallery.viewModel.gallery
 
 import android.app.Application
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.*
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.retrofit.FlickrRepository
@@ -40,6 +41,15 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         changeQuery(query)
 
         if(query.isBlank()) QueryPreferences.setStoredQuery(app, "")
+    }
+
+    fun setInitialQuery(searchView: SearchView) {
+        searchView.apply {
+            val lastQuery: String = QueryPreferences.getStoredQuery(app)
+            setQuery(lastQuery, true)
+            if(lastQuery.isNotBlank()) isIconified = false
+            clearFocus()
+        }
     }
     //endregion
 

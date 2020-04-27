@@ -39,6 +39,9 @@ class PhotoGalleryFragment: Fragment() {
 
         val searchView: SearchView =
             menu.findItem(R.id.gallery_menu_search).actionView as SearchView
+
+        photoGalleryViewModel.setInitialQuery(searchView)
+
         searchView.apply {
             setOnQueryTextListener(object: SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(queryText: String): Boolean {
