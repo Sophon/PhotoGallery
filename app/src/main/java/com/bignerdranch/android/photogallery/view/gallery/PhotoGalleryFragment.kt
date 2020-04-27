@@ -2,7 +2,6 @@ package com.bignerdranch.android.photogallery.view.gallery
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
@@ -13,8 +12,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.bignerdranch.android.photogallery.viewModel.gallery.PhotoGalleryViewModel
-
-private const val TAG = "PhotoGalleryFragment"
 
 class PhotoGalleryFragment: Fragment() {
     //region Private vars
@@ -45,8 +42,6 @@ class PhotoGalleryFragment: Fragment() {
         searchView.apply {
             setOnQueryTextListener(object: SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(queryText: String): Boolean {
-                    Log.d(TAG, "onQueryTextSubmit: $queryText")
-
                     photoGalleryViewModel.searchPhotos(queryText)
 
                     hideKeyboard()
@@ -57,8 +52,6 @@ class PhotoGalleryFragment: Fragment() {
                 }
 
                 override fun onQueryTextChange(queryText: String): Boolean {
-                    Log.d(TAG, "onQueryTextChange: $queryText")
-
                     photoGalleryViewModel.liveSearchPhotos(queryText)
 
                     return false
