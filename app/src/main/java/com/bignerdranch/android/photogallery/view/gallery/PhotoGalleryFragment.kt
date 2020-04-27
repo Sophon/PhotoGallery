@@ -54,7 +54,7 @@ class PhotoGalleryFragment: Fragment() {
                 override fun onQueryTextChange(queryText: String): Boolean {
                     Log.d(TAG, "onQueryTextChange: $queryText")
 
-                    photoGalleryViewModel.searchPhotos(queryText)
+                    photoGalleryViewModel.liveSearchPhotos(queryText)
 
                     return false
                 }
