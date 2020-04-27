@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.*
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.retrofit.FlickrRepository
+import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
 
 class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
     //region Public vars
@@ -28,6 +29,18 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
 
     //region Public funs
     fun searchPhotos(query: String) {
+        changeQuery(query)
+
+        QueryPreferences.setStoredQuery(app, query)
+    }
+
+    fun liveSearchPhotos(query: String) {
+        changeQuery(query)
+    }
+    //endregion
+
+    //region Private funs
+    private fun changeQuery(query: String) {
         searchQueryLiveData.value = query
     }
     //endregion
