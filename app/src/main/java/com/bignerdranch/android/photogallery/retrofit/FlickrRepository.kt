@@ -1,6 +1,5 @@
 package com.bignerdranch.android.photogallery.retrofit
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.bignerdranch.android.photogallery.api.flickr.FlickrApi
@@ -11,8 +10,7 @@ import com.bignerdranch.android.photogallery.model.GalleryItem
 import okhttp3.OkHttpClient
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
-
-private const val TAG = "FlickrRepository"
+import timber.log.Timber
 
 class FlickrRepository {
     //region Private vars
@@ -54,7 +52,7 @@ class FlickrRepository {
         flickrRequest.enqueue(
             object: Callback<FlickrResponse> {
                 override fun onFailure(call: Call<FlickrResponse>, t: Throwable) {
-                    Log.e(TAG, "fetch(): failed to fetch photos", t)
+                    Timber.e(t, "Failed to fetch photos.")
                 }
 
                 override fun onResponse(
@@ -66,7 +64,7 @@ class FlickrRepository {
                         photoResponse?.galleryItems ?: mutableListOf()
                     galleryItems = galleryItems.filterNot { it.url.isBlank() }
 
-                    Log.d(TAG, "fetch(): galleryItems loaded, ${galleryItems.size} items")
+                    Timber.d("galleryItems loaded, ${galleryItems.size} items.")
 
                     responseLiveData.value = galleryItems
                 }
