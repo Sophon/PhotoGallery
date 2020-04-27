@@ -48,6 +48,8 @@ class PhotoGalleryFragment: Fragment() {
 
                     hideKeyboard()
 
+                    clearFocus()
+
                     return true
                 }
 
