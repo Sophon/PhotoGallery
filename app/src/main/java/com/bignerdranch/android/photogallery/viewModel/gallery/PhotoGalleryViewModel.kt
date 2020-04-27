@@ -38,6 +38,8 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
 
     fun liveSearchPhotos(query: String) {
         changeQuery(query)
+
+        if(query.isBlank()) QueryPreferences.setStoredQuery(app, "")
     }
     //endregion
 
