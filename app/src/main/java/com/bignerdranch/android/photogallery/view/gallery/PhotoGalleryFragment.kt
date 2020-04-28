@@ -9,9 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.work.*
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
+import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
 import com.bignerdranch.android.photogallery.viewModel.gallery.PhotoGalleryViewModel
+import com.bignerdranch.android.photogallery.workers.PollPhotosWorker
+import java.util.concurrent.TimeUnit
 
 class PhotoGalleryFragment: Fragment() {
     //region Private vars
@@ -58,6 +62,8 @@ class PhotoGalleryFragment: Fragment() {
                 }
             })
         }
+
+        setupPollingMenuButton(menu)
     }
 
     override fun onCreateView(
@@ -82,7 +88,20 @@ class PhotoGalleryFragment: Fragment() {
             }
         )
     }
+    //endregion
 
+    //region Private funs
+    private fun setupPollingMenuButton(menu: Menu) {
+        val pollingButton = menu.findItem(R.id.gallery_menu_toggle_polling)
+
+        val buttonTitle: Int = if(QueryPreferences.isPolling(requireContext())) {
+            R.string.stop_polling
+        } else {
+            R.string.start_polling
+        }
+
+        pollingButton.setTitle(buttonTitle)
+    }
     //endregion
 
     //region Extension funs
