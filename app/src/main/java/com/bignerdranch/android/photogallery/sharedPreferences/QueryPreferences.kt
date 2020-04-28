@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager
 
 private const val PREF_SEARCH_QUERY = "query"
 private const val LAST_PHOTO_ID = "id"
+private const val PREF_IS_POLLING = "isPolling"
 
 object QueryPreferences {
 
@@ -36,6 +37,20 @@ object QueryPreferences {
             .getDefaultSharedPreferences(context)
             .edit()
             .putString(LAST_PHOTO_ID, lastPhotoId)
+            .apply()
+    }
+
+    fun isPolling(context: Context): Boolean {
+        return PreferenceManager
+            .getDefaultSharedPreferences(context)
+            .getBoolean(PREF_IS_POLLING, false)
+    }
+
+    fun setPolling(context: Context, isPolling: Boolean) {
+        PreferenceManager
+            .getDefaultSharedPreferences(context)
+            .edit()
+            .putBoolean(PREF_IS_POLLING, isPolling)
             .apply()
     }
 }
