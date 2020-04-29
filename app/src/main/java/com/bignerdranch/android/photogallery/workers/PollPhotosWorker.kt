@@ -1,8 +1,14 @@
 package com.bignerdranch.android.photogallery.workers
 
+import android.app.PendingIntent
 import android.content.Context
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.bignerdranch.android.photogallery.NOTIFICATION_CHANNEL_ID
+import com.bignerdranch.android.photogallery.PhotoGalleryActivity
+import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.retrofit.FlickrRepository
 import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
@@ -29,6 +35,7 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
         val lastPhotoId: String = QueryPreferences.getLastPhotoId(context)
         if(thereIsNewPhoto(photos, lastPhotoId)) {
             Timber.d("notification")
+            createNotification()
         }
 
         return Result.success()
@@ -62,6 +69,27 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
 
             false
         }
+    }
+
+    private fun createNotification() {
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            PhotoGalleryActivity.newIntent(context),
+            0
+        )
+
+        val resources = context.resources
+
+        val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_menu_report_image)
+            .setContentTitle(resources.getString(R.string.new_pictures_title))
+            .setContentTitle(resources.getString(R.string.new_pictures_text))
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(0, notification)
     }
     //endregion
 }
