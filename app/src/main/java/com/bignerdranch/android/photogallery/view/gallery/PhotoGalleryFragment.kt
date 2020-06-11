@@ -2,7 +2,6 @@ package com.bignerdranch.android.photogallery.view.gallery
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
@@ -10,13 +9,19 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.work.*
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
+import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
+import com.bignerdranch.android.photogallery.view.VisibleFragment
 import com.bignerdranch.android.photogallery.viewModel.gallery.PhotoGalleryViewModel
+import com.bignerdranch.android.photogallery.workers.PollPhotosWorker
+import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
-private const val TAG = "PhotoGalleryFragment"
+private const val POLL_WORK = "POLL_WORK"
 
-class PhotoGalleryFragment: Fragment() {
+class PhotoGalleryFragment: VisibleFragment() {
     //region Private vars
     private lateinit var fragmentBinding: FragmentPhotoGalleryBinding
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
@@ -45,8 +50,6 @@ class PhotoGalleryFragment: Fragment() {
         searchView.apply {
             setOnQueryTextListener(object: SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(queryText: String): Boolean {
-                    Log.d(TAG, "onQueryTextSubmit: $queryText")
-
                     photoGalleryViewModel.searchPhotos(queryText)
 
                     hideKeyboard()
@@ -57,14 +60,14 @@ class PhotoGalleryFragment: Fragment() {
                 }
 
                 override fun onQueryTextChange(queryText: String): Boolean {
-                    Log.d(TAG, "onQueryTextChange: $queryText")
-
                     photoGalleryViewModel.liveSearchPhotos(queryText)
 
                     return false
                 }
             })
         }
+
+        setupPollingMenuButton(menu)
     }
 
     override fun onCreateView(
@@ -90,6 +93,58 @@ class PhotoGalleryFragment: Fragment() {
         )
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.gallery_menu_toggle_polling -> {
+                if(QueryPreferences.isPolling(requireContext())) {
+                    QueryPreferences.setPolling(requireContext(), false)
+                    WorkManager.getInstance().cancelUniqueWork(POLL_WORK)
+                } else {
+                    QueryPreferences.setPolling(requireContext(), true)
+                    createPeriodicPollingWork()
+                }
+
+                activity?.invalidateOptionsMenu()
+
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+    //endregion
+
+    //region Private funs
+    private fun createPeriodicPollingWork() {
+        Timber.d("setting up polling")
+
+        val pollConstraints = Constraints
+            .Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .build()
+
+        val periodicWorkRequest: PeriodicWorkRequest = PeriodicWorkRequest
+            .Builder(PollPhotosWorker::class.java, 15, TimeUnit.MINUTES)
+            .setConstraints(pollConstraints)
+            .build()
+
+        WorkManager.getInstance().enqueueUniquePeriodicWork(
+            POLL_WORK,
+            ExistingPeriodicWorkPolicy.KEEP,
+            periodicWorkRequest
+        )
+    }
+
+    private fun setupPollingMenuButton(menu: Menu) {
+        val pollingButton = menu.findItem(R.id.gallery_menu_toggle_polling)
+
+        val buttonTitle: Int = if(QueryPreferences.isPolling(requireContext())) {
+            R.string.stop_polling
+        } else {
+            R.string.start_polling
+        }
+
+        pollingButton.setTitle(buttonTitle)
+    }
     //endregion
 
     //region Extension funs

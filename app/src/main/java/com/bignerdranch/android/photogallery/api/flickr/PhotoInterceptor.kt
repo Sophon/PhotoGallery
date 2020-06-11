@@ -5,6 +5,7 @@ import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import timber.log.Timber
 
 class PhotoInterceptor: Interceptor {
 
@@ -17,6 +18,8 @@ class PhotoInterceptor: Interceptor {
             .addQueryParameter("nojsoncallback", "1")
             .addQueryParameter("extras", "url_s")
             .build()
+
+        Timber.d("new url: $newUrl")
 
         val newRequest = originalRequest.newBuilder()
             .url(newUrl)

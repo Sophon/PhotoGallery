@@ -6,6 +6,7 @@ import androidx.lifecycle.*
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.retrofit.FlickrRepository
 import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
+import timber.log.Timber
 
 class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
     //region Public vars
@@ -35,21 +36,29 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         changeQuery(query)
 
         QueryPreferences.setStoredQuery(app, query)
+
+        Timber.d("stored query: $query")
     }
 
     fun liveSearchPhotos(query: String) {
         changeQuery(query)
 
-        if(query.isBlank()) QueryPreferences.setStoredQuery(app, "")
+        if(query.isBlank()) {
+            QueryPreferences.setStoredQuery(app, "")
+            Timber.d("empty query")
+        }
     }
 
     fun setInitialQuery(searchView: SearchView) {
+        val lastQuery: String = QueryPreferences.getStoredQuery(app)
+
         searchView.apply {
-            val lastQuery: String = QueryPreferences.getStoredQuery(app)
             setQuery(lastQuery, true)
             if(lastQuery.isNotBlank()) isIconified = false
             clearFocus()
         }
+
+        Timber.d("lastQuery: $lastQuery")
     }
     //endregion
 
