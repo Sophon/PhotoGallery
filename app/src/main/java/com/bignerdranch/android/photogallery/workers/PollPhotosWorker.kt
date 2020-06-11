@@ -2,6 +2,7 @@ package com.bignerdranch.android.photogallery.workers
 
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
@@ -16,6 +17,15 @@ import timber.log.Timber
 
 class PollPhotosWorker(private val context: Context, workerParams: WorkerParameters)
     : Worker(context, workerParams) {
+
+    companion object {
+        const val ACTION_SHOW_NOTIFICATION =
+            "com.bignerdranch.android.photogallery.SHOW_NOTIFICATION"
+
+        const val PERM_PRIVATE = "com.bignerdranch.android.photogallery.PRIVATE"
+
+        const val NOTIFICATION = "NOTIFICATION"
+    }
 
     //region Overrides
     override fun doWork(): Result {
@@ -34,8 +44,7 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
         //compare the newest photo with the id of the last photo
         val lastPhotoId: String = QueryPreferences.getLastPhotoId(context)
         if(thereIsNewPhoto(photos, lastPhotoId)) {
-            Timber.d("notification")
-            createNotification()
+            createBackgroundNotification()
         }
 
         return Result.success()
@@ -71,7 +80,7 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
         }
     }
 
-    private fun createNotification() {
+    private fun createBackgroundNotification() {
         val pendingIntent = PendingIntent.getActivity(
             context,
             0,
@@ -89,7 +98,11 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
             .setAutoCancel(true)
             .build()
 
-        NotificationManagerCompat.from(context).notify(0, notification)
+        val notificationIntent = Intent(ACTION_SHOW_NOTIFICATION).apply {
+            putExtra(NOTIFICATION, notification)
+        }
+
+        context.sendOrderedBroadcast(notificationIntent, PERM_PRIVATE)
     }
     //endregion
 }

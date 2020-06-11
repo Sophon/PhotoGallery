@@ -13,6 +13,7 @@ import androidx.work.*
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
+import com.bignerdranch.android.photogallery.view.VisibleFragment
 import com.bignerdranch.android.photogallery.viewModel.gallery.PhotoGalleryViewModel
 import com.bignerdranch.android.photogallery.workers.PollPhotosWorker
 import timber.log.Timber
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit
 
 private const val POLL_WORK = "POLL_WORK"
 
-class PhotoGalleryFragment: Fragment() {
+class PhotoGalleryFragment: VisibleFragment() {
     //region Private vars
     private lateinit var fragmentBinding: FragmentPhotoGalleryBinding
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
