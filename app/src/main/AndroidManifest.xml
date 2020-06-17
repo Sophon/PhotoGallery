@@ -26,6 +26,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".view.webContent.PhotoPageActivity" />
+
         <receiver
             android:name=".receivers.NotificationReceiver"
             android:permission="com.bignerdranch.android.photogallery.PRIVATE"

@@ -11,4 +11,7 @@
     <string name="notification_channel_name">Flickr polling</string>
     <string name="new_pictures_title">New PhotoGallery pictures</string>
     <string name="new_pictures_text">You have new pictures in PhotoGallery</string>
+
+<!--    Page menu-->
+    <string name="open_in_browser">Open in browser</string>
 </resources>
