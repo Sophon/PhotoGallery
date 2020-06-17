@@ -6,8 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.fragment.app.Fragment
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoPageBinding
 import com.bignerdranch.android.photogallery.view.VisibleFragment
 
@@ -46,10 +47,25 @@ class PhotoPageFragment: VisibleFragment() {
         fragmentBinding =
             FragmentPhotoPageBinding.inflate(inflater, container, false)
 
+        fragmentBinding.progressBar.max = 100
+
         fragmentBinding.webView.apply {
             loadUrl(uri.toString())
             settings.javaScriptEnabled = true
             webViewClient = WebViewClient()
+
+            webChromeClient = object: WebChromeClient() {
+                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                    if(newProgress == 100) {
+                        fragmentBinding.progressBar.visibility = View.GONE
+                    } else {
+                        fragmentBinding.progressBar.apply {
+                            visibility = View.VISIBLE
+                            progress = newProgress
+                        }
+                    }
+                }
+            }
         }
 
         return fragmentBinding.root
