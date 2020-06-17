@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.appcompat.app.AppCompatActivity
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoPageBinding
 import com.bignerdranch.android.photogallery.view.VisibleFragment
 
@@ -64,6 +65,10 @@ class PhotoPageFragment: VisibleFragment() {
                             progress = newProgress
                         }
                     }
+                }
+
+                override fun onReceivedTitle(view: WebView?, title: String?) {
+                    (activity as AppCompatActivity).supportActionBar?.subtitle = title
                 }
             }
         }
