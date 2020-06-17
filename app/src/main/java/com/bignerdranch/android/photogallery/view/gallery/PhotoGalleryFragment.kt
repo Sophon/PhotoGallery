@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit
 private const val POLL_WORK = "POLL_WORK"
 
 class PhotoGalleryFragment: VisibleFragment() {
+
     //region Private vars
     private lateinit var fragmentBinding: FragmentPhotoGalleryBinding
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
@@ -88,7 +89,8 @@ class PhotoGalleryFragment: VisibleFragment() {
         photoGalleryViewModel.galleryItemLiveData.observe(
             viewLifecycleOwner,
             Observer { galleryItems ->
-                fragmentBinding.galleryRecyclerView.adapter = PhotoAdapter(galleryItems)
+                fragmentBinding.galleryRecyclerView.adapter =
+                    PhotoAdapter(requireContext(), galleryItems)
             }
         )
     }
