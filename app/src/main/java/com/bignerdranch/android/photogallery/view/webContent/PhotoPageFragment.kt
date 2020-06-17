@@ -1,15 +1,15 @@
 package com.bignerdranch.android.photogallery.view.webContent
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
+import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoPageBinding
 import com.bignerdranch.android.photogallery.view.VisibleFragment
 
@@ -37,6 +37,8 @@ class PhotoPageFragment: VisibleFragment() {
         super.onCreate(savedInstanceState)
 
         uri = arguments?.getParcelable(ARG_URI) ?: Uri.EMPTY
+
+        setHasOptionsMenu(true)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -75,4 +77,29 @@ class PhotoPageFragment: VisibleFragment() {
 
         return fragmentBinding.root
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+
+        inflater.inflate(R.menu.fragment_photo_page, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.page_menu_open_in_browser -> {
+                openInBrowser(uri)
+
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+    //endregion
+
+    //region Private funs
+    private fun openInBrowser(uri: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
+    }
+    //endregion
 }
