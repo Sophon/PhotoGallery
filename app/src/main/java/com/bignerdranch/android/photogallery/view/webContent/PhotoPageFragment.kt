@@ -9,10 +9,11 @@ import android.view.ViewGroup
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoPageBinding
+import com.bignerdranch.android.photogallery.view.VisibleFragment
 
 private const val ARG_URI = "photo_page_uri"
 
-class PhotoPageFragment: Fragment() {
+class PhotoPageFragment: VisibleFragment() {
 
     //region Private vars
     private lateinit var fragmentBinding: FragmentPhotoPageBinding
