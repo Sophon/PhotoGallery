@@ -14,4 +14,5 @@
 
 <!--    Page menu-->
     <string name="open_in_browser">Open in browser</string>
+    <string name="save_for_offline">Save for offline</string>
 </resources>

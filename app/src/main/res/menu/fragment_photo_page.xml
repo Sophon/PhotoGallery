@@ -6,4 +6,9 @@
         android:id="@+id/page_menu_open_in_browser"
         android:title="@string/open_in_browser"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/save_for_offline"
+        android:title="@string/save_for_offline"
+        app:showAsAction="never" />
 </menu>

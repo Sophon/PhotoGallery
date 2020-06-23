@@ -8,6 +8,7 @@ import android.view.*
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoPageBinding
@@ -91,6 +92,17 @@ class PhotoPageFragment: VisibleFragment() {
 
                 return true
             }
+
+            R.id.save_for_offline -> {
+                Toast.makeText(
+                    requireContext(),
+                    "save for offline",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
