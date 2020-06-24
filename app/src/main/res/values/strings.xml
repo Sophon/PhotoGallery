@@ -6,6 +6,8 @@
     <string name="start_polling">Start polling</string>
     <string name="stop_polling">Stop polling</string>
     <string name="clear_search">Clear search</string>
+    <string name="online_gallery">Show online gallery</string>
+    <string name="offline_gallery">Show offline gallery</string>
 
 <!--    Notification channel-->
     <string name="notification_channel_name">Flickr polling</string>
