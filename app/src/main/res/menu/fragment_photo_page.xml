@@ -11,4 +11,9 @@
         android:id="@+id/save_for_offline"
         android:title="@string/save_for_offline"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/display_saved_page"
+        android:title="display saved page"
+        app:showAsAction="never" />
 </menu>
