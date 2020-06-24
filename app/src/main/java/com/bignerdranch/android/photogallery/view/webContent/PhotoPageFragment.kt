@@ -97,9 +97,9 @@ class PhotoPageFragment: VisibleFragment() {
             R.id.save_for_offline -> {
                 val responseMsg = if(fragmentBinding.progressBar.visibility == View.GONE) {
                     savePage()
-                    "Saved for offline"
+                    getString(R.string.screen_prompt_saved)
                 } else {
-                    "Please wait for page to load"
+                    getString(R.string.screen_prompt_wait)
                 }
 
                 Toast.makeText(

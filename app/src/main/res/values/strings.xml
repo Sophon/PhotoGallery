@@ -15,4 +15,8 @@
 <!--    Page menu-->
     <string name="open_in_browser">Open in browser</string>
     <string name="save_for_offline">Save for offline</string>
+
+<!--    Photo page-->
+    <string name="screen_prompt_saved">Saved for offline</string>
+    <string name="screen_prompt_wait">Please wait for the page to load</string>
 </resources>
