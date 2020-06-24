@@ -27,7 +27,7 @@ internal class PhotoHolder(
     override fun onClick(v: View?) {
         Timber.d("Photo: clicked on a photo -> ${galleryItem.photoPageUri}")
 
-        val intent = PhotoPageActivity.newIntent(context, galleryItem.photoPageUri)
+        val intent = PhotoPageActivity.newIntent(context, galleryItem)
         context.startActivity(intent)
     }
 

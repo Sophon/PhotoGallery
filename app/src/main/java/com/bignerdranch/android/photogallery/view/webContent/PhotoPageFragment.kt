@@ -12,22 +12,23 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoPageBinding
+import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.view.VisibleFragment
 
-private const val ARG_URI = "photo_page_uri"
+private const val ARG_GALLERY_ITEM = "gallery_item"
 
 class PhotoPageFragment: VisibleFragment() {
 
     //region Private vars
     private lateinit var fragmentBinding: FragmentPhotoPageBinding
-    private lateinit var uri: Uri
+    private lateinit var galleryItem: GalleryItem
     //endregion
 
     companion object {
-        fun newInstance(uri: Uri): PhotoPageFragment {
+        fun newInstance(galleryItem: GalleryItem): PhotoPageFragment {
             return PhotoPageFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(ARG_URI, uri)
+                    putParcelable(ARG_GALLERY_ITEM, galleryItem)
                 }
             }
         }
@@ -37,7 +38,7 @@ class PhotoPageFragment: VisibleFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        uri = arguments?.getParcelable(ARG_URI) ?: Uri.EMPTY
+        galleryItem = arguments?.getParcelable(ARG_GALLERY_ITEM)!!
 
         setHasOptionsMenu(true)
     }
@@ -54,7 +55,7 @@ class PhotoPageFragment: VisibleFragment() {
         fragmentBinding.progressBar.max = 100
 
         fragmentBinding.webView.apply {
-            loadUrl(uri.toString())
+            loadUrl(galleryItem.photoPageUri.toString())
             settings.javaScriptEnabled = true
             webViewClient = WebViewClient()
 
@@ -88,7 +89,7 @@ class PhotoPageFragment: VisibleFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.page_menu_open_in_browser -> {
-                openInBrowser(uri)
+                openInBrowser(galleryItem.photoPageUri)
 
                 return true
             }
