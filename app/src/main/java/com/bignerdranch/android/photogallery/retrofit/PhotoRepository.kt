@@ -15,19 +15,25 @@ import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
 import java.lang.IllegalStateException
+import java.util.concurrent.Executors
 
 private const val DB_NAME = "gallery_item_database"
 
 class PhotoRepository private constructor(context: Context) {
-    //region Private vars
+    //region Flickr
     private val flickrApi: FlickrApi
     private lateinit var flickrRequest: Call<FlickrResponse>
+    //endregion
 
+    //region Database
     private val database: GalleryItemDatabase = Room.databaseBuilder(
         context.applicationContext,
         GalleryItemDatabase::class.java,
         DB_NAME
     ).build()
+
+    private val galleryItemDao = database.galleryItemDao()
+    private val executor = Executors.newSingleThreadExecutor()
     //endregion
 
     init {
@@ -70,6 +76,14 @@ class PhotoRepository private constructor(context: Context) {
 
     fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
         return getPhotos(flickrApi.searchPhotos(query))
+    }
+
+    fun getGalleryItems(): LiveData<List<GalleryItem>> = galleryItemDao.getGalleryItems()
+
+    fun addGalleryItem(galleryItem: GalleryItem) {
+        executor.execute {
+            galleryItemDao.addGalleryItem(galleryItem)
+        }
     }
     //endregion
 
