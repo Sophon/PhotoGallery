@@ -95,22 +95,19 @@ class PhotoPageFragment: VisibleFragment() {
             }
 
             R.id.save_for_offline -> {
-                if(fragmentBinding.progressBar.visibility == View.GONE) {
+                val responseMsg = if(fragmentBinding.progressBar.visibility == View.GONE) {
                     savePage()
+                    "Saved for offline"
                 } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Wait for the page to finish",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    "Please wait for page to load"
                 }
 
-                return true
-            }
+                Toast.makeText(
+                    requireContext(),
+                    responseMsg,
+                    Toast.LENGTH_SHORT
+                ).show()
 
-            R.id.display_saved_page -> {
-                val filesDir = requireContext().filesDir
-                fragmentBinding.webView.loadUrl("file:///${filesDir}/mySavedGalleryPage.mht")
                 return true
             }
 
@@ -128,7 +125,9 @@ class PhotoPageFragment: VisibleFragment() {
     private fun savePage() {
         val filesDir = requireContext().filesDir
 
-        fragmentBinding.webView.saveWebArchive("${filesDir}/mySavedGalleryPage.mht")
+        fragmentBinding.webView.saveWebArchive(
+            "${filesDir}/${System.currentTimeMillis()}_${galleryItem.id}.mht"
+        )
     }
     //endregion
 }
