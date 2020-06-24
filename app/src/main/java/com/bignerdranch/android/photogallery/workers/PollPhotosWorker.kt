@@ -4,14 +4,13 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.bignerdranch.android.photogallery.NOTIFICATION_CHANNEL_ID
 import com.bignerdranch.android.photogallery.PhotoGalleryActivity
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.model.GalleryItem
-import com.bignerdranch.android.photogallery.retrofit.FlickrRepository
+import com.bignerdranch.android.photogallery.retrofit.PhotoRepository
 import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
 import timber.log.Timber
 
@@ -53,7 +52,7 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
 
     //region Private funs
     private fun searchPhotos(query: String): List<GalleryItem> {
-        return FlickrRepository().searchPhotosRequest(query)
+        return PhotoRepository.get().searchPhotosRequest(query)
             .execute()
             .body()
             ?.photos

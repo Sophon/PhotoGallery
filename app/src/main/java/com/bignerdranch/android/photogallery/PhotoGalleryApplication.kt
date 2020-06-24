@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import com.bignerdranch.android.photogallery.retrofit.PhotoRepository
 import timber.log.Timber
 
 const val NOTIFICATION_CHANNEL_ID = "photo_poll"
@@ -28,6 +29,8 @@ class PhotoGalleryApplication: Application() {
             getSystemService(NotificationManager::class.java)!!
                 .createNotificationChannel(notificationChannel)
         }
+
+        PhotoRepository.initialize(this)
     }
     //endregion
 }

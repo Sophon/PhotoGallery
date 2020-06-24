@@ -1,21 +1,33 @@
 package com.bignerdranch.android.photogallery.retrofit
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.room.Room
 import com.bignerdranch.android.photogallery.api.flickr.FlickrApi
 import com.bignerdranch.android.photogallery.api.flickr.FlickrResponse
 import com.bignerdranch.android.photogallery.api.flickr.PhotoInterceptor
 import com.bignerdranch.android.photogallery.api.flickr.PhotoResponse
+import com.bignerdranch.android.photogallery.database.GalleryItemDatabase
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import okhttp3.OkHttpClient
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
+import java.lang.IllegalStateException
 
-class FlickrRepository {
+private const val DB_NAME = "gallery_item_database"
+
+class PhotoRepository private constructor(context: Context) {
     //region Private vars
     private val flickrApi: FlickrApi
     private lateinit var flickrRequest: Call<FlickrResponse>
+
+    private val database: GalleryItemDatabase = Room.databaseBuilder(
+        context.applicationContext,
+        GalleryItemDatabase::class.java,
+        DB_NAME
+    ).build()
     //endregion
 
     init {
@@ -30,6 +42,20 @@ class FlickrRepository {
             .build()
 
         flickrApi = retrofit.create(FlickrApi::class.java)
+    }
+
+    companion object {
+        private var INSTANCE: PhotoRepository? = null
+
+        fun initialize(context: Context) {
+            if(INSTANCE == null) {
+                INSTANCE = PhotoRepository(context)
+            }
+        }
+
+        fun get(): PhotoRepository {
+            return INSTANCE ?: throw IllegalStateException("PhotoRepository must be initialized!")
+        }
     }
 
     //region Public funs

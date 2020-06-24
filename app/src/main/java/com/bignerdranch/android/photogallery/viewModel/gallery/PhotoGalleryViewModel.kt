@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.*
 import com.bignerdranch.android.photogallery.model.GalleryItem
-import com.bignerdranch.android.photogallery.retrofit.FlickrRepository
+import com.bignerdranch.android.photogallery.retrofit.PhotoRepository
 import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
 import timber.log.Timber
 
@@ -14,7 +14,7 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
     //endregion
 
     //region Private vars
-    private val flickrRepository = FlickrRepository()
+    private val flickrRepository = PhotoRepository.get()
     private val searchQueryLiveData = MutableLiveData("")
     //endregion
 
