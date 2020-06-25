@@ -10,6 +10,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoPageBinding
 import com.bignerdranch.android.photogallery.model.GalleryItem
@@ -21,6 +22,7 @@ class PhotoPageFragment: VisibleFragment() {
 
     //region Private vars
     private lateinit var fragmentBinding: FragmentPhotoPageBinding
+    private lateinit var photoPageViewModel: PhotoPageViewModel
     private lateinit var galleryItem: GalleryItem
     //endregion
 
@@ -37,6 +39,9 @@ class PhotoPageFragment: VisibleFragment() {
     //region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        photoPageViewModel =
+            ViewModelProvider(this).get(PhotoPageViewModel::class.java)
 
         galleryItem = arguments?.getParcelable(ARG_GALLERY_ITEM)!!
 
@@ -96,7 +101,7 @@ class PhotoPageFragment: VisibleFragment() {
 
             R.id.save_for_offline -> {
                 val responseMsg = if(fragmentBinding.progressBar.visibility == View.GONE) {
-                    savePage()
+                    photoPageViewModel.savePhoto(galleryItem)
                     getString(R.string.screen_prompt_saved)
                 } else {
                     getString(R.string.screen_prompt_wait)
@@ -120,14 +125,6 @@ class PhotoPageFragment: VisibleFragment() {
     private fun openInBrowser(uri: Uri) {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
-    }
-
-    private fun savePage() {
-        val filesDir = requireContext().filesDir
-
-        fragmentBinding.webView.saveWebArchive(
-            "${filesDir}/${System.currentTimeMillis()}_${galleryItem.id}.mht"
-        )
     }
     //endregion
 }
