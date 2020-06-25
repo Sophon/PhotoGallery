@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.work.*
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
+import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
 import com.bignerdranch.android.photogallery.view.VisibleFragment
 import com.bignerdranch.android.photogallery.viewModel.gallery.PhotoGalleryViewModel
@@ -26,6 +27,7 @@ class PhotoGalleryFragment: VisibleFragment() {
     //region Private vars
     private lateinit var fragmentBinding: FragmentPhotoGalleryBinding
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
+    private var viewingOnline = true
     //endregion
 
     //region Lifecycle
@@ -86,13 +88,7 @@ class PhotoGalleryFragment: VisibleFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        photoGalleryViewModel.galleryItemLiveData.observe(
-            viewLifecycleOwner,
-            Observer { galleryItems ->
-                fragmentBinding.galleryRecyclerView.adapter =
-                    PhotoAdapter(requireContext(), galleryItems)
-            }
-        )
+        observeData(photoGalleryViewModel.galleryItemLiveData)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -105,6 +101,22 @@ class PhotoGalleryFragment: VisibleFragment() {
                     QueryPreferences.setPolling(requireContext(), true)
                     createPeriodicPollingWork()
                 }
+
+                activity?.invalidateOptionsMenu()
+
+                return true
+            }
+
+            R.id.gallery_menu_switch_galleries -> {
+                viewingOnline = !viewingOnline
+
+                observeData(
+                    if(viewingOnline) {
+                        photoGalleryViewModel.galleryItemLiveData
+                    } else {
+                        photoGalleryViewModel.offlineGalleryLiveData
+                    }
+                )
 
                 activity?.invalidateOptionsMenu()
 
@@ -138,14 +150,32 @@ class PhotoGalleryFragment: VisibleFragment() {
 
     private fun setupPollingMenuButton(menu: Menu) {
         val pollingButton = menu.findItem(R.id.gallery_menu_toggle_polling)
+        pollingButton.setTitle(
+            if(QueryPreferences.isPolling(requireContext())) {
+                R.string.stop_polling
+            } else {
+                R.string.start_polling
+            }
+        )
 
-        val buttonTitle: Int = if(QueryPreferences.isPolling(requireContext())) {
-            R.string.stop_polling
-        } else {
-            R.string.start_polling
-        }
+        val galleryButton = menu.findItem(R.id.gallery_menu_switch_galleries)
+        galleryButton.setTitle(
+            if(viewingOnline) {
+                R.string.offline_gallery
+            } else {
+                R.string.online_gallery
+            }
+        )
+    }
 
-        pollingButton.setTitle(buttonTitle)
+    private fun observeData(liveDataSource: LiveData<List<GalleryItem>>) {
+        liveDataSource.observe(
+            viewLifecycleOwner,
+            Observer { galleryItems ->
+                fragmentBinding.galleryRecyclerView.adapter =
+                    PhotoAdapter(requireContext(), galleryItems)
+            }
+        )
     }
     //endregion
 
