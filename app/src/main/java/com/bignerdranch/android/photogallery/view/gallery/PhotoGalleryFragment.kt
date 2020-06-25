@@ -88,7 +88,7 @@ class PhotoGalleryFragment: VisibleFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        observeData(photoGalleryViewModel.galleryItemLiveData)
+        observeData(photoGalleryViewModel.onlineGalleryLiveData)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -112,7 +112,7 @@ class PhotoGalleryFragment: VisibleFragment() {
 
                 observeData(
                     if(viewingOnline) {
-                        photoGalleryViewModel.galleryItemLiveData
+                        photoGalleryViewModel.onlineGalleryLiveData
                     } else {
                         photoGalleryViewModel.offlineGalleryLiveData
                     }
