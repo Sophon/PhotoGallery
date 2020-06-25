@@ -111,6 +111,14 @@ class PhotoPageFragment: VisibleFragment() {
                     getString(R.string.screen_prompt_wait)
                 }
 
+                photoPageViewModel.apply {
+                    if(savedGalleryItemLiveData.value == null) {
+                        savePhoto(galleryItem)
+                    } else {
+                        unsavePhoto(galleryItem)
+                    }
+                }
+
                 Toast.makeText(
                     requireContext(),
                     responseMsg,

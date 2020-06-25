@@ -20,6 +20,10 @@ class PhotoPageViewModel: ViewModel() {
         photoRepository.addGalleryItem(galleryItem)
     }
 
+    fun unsavePhoto(galleryItem: GalleryItem) {
+        photoRepository.unsaveGalleryItem(galleryItem)
+    }
+
     fun checkIfPhotoSaved(galleryItemId: String) {
         galleryItemIdLiveData.value = galleryItemId
     }

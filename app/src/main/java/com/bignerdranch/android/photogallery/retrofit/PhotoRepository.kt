@@ -88,6 +88,12 @@ class PhotoRepository private constructor(context: Context) {
             galleryItemDao.addGalleryItem(galleryItem)
         }
     }
+
+    fun unsaveGalleryItem(galleryItem: GalleryItem) {
+        executor.execute {
+            galleryItemDao.deleteGalleryItem(galleryItem)
+        }
+    }
     //endregion
 
     //region Private funs
