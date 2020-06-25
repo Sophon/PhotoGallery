@@ -11,10 +11,11 @@ import timber.log.Timber
 class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
     //region Public vars
     val galleryItemLiveData: LiveData<List<GalleryItem>>
+    val offlineGalleryLiveData: LiveData<List<GalleryItem>>
     //endregion
 
     //region Private vars
-    private val flickrRepository = PhotoRepository.get()
+    private val photoRepository = PhotoRepository.get()
     private val searchQueryLiveData = MutableLiveData("")
     //endregion
 
@@ -24,11 +25,13 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         galleryItemLiveData =
             Transformations.switchMap(searchQueryLiveData) { searchTerm ->
                 if(searchTerm.isBlank()) {
-                    flickrRepository.fetchInterestingPhotos()
+                    photoRepository.fetchInterestingPhotos()
                 } else {
-                    flickrRepository.searchPhotos(searchTerm)
+                    photoRepository.searchPhotos(searchTerm)
                 }
             }
+
+        offlineGalleryLiveData = photoRepository.getGalleryItems()
     }
 
     //region Public funs
