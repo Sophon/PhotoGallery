@@ -1,6 +1,7 @@
 package com.bignerdranch.android.photogallery.retrofit
 
 import android.content.Context
+import android.widget.Gallery
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.room.Room
@@ -77,6 +78,8 @@ class PhotoRepository private constructor(context: Context) {
     fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
         return getPhotos(flickrApi.searchPhotos(query))
     }
+
+    fun getGalleryItem(id: String): LiveData<GalleryItem?> = galleryItemDao.getGalleryItem(id)
 
     fun getGalleryItems(): LiveData<List<GalleryItem>> = galleryItemDao.getGalleryItems()
 

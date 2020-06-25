@@ -14,4 +14,7 @@ interface GalleryItemDao {
 
     @Insert
     fun addGalleryItem(galleryItem: GalleryItem)
+
+    @Query("SELECT * FROM galleryitem WHERE id=(:id)")
+    fun getGalleryItem(id: String): LiveData<GalleryItem?>
 }

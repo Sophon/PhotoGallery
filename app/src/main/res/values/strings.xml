@@ -16,9 +16,11 @@
 
 <!--    Page menu-->
     <string name="open_in_browser">Open in browser</string>
-    <string name="save_for_offline">Save for offline</string>
+    <string name="save_into_phone">Save into phone</string>
+    <string name="unsave_from_phone">Unsave from phone</string>
 
 <!--    Photo page-->
-    <string name="screen_prompt_saved">Saved for offline</string>
+    <string name="screen_prompt_saved">Saved into phone</string>
+    <string name="screen_prompt_unsaved">Unsaved from phone</string>
     <string name="screen_prompt_wait">Please wait for the page to load</string>
 </resources>

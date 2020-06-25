@@ -10,6 +10,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoPageBinding
@@ -40,10 +41,11 @@ class PhotoPageFragment: VisibleFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        galleryItem = arguments?.getParcelable(ARG_GALLERY_ITEM)!!
+
         photoPageViewModel =
             ViewModelProvider(this).get(PhotoPageViewModel::class.java)
-
-        galleryItem = arguments?.getParcelable(ARG_GALLERY_ITEM)!!
+        photoPageViewModel.checkIfPhotoSaved(galleryItem.id)
 
         setHasOptionsMenu(true)
     }
@@ -89,6 +91,8 @@ class PhotoPageFragment: VisibleFragment() {
         super.onCreateOptionsMenu(menu, inflater)
 
         inflater.inflate(R.menu.fragment_photo_page, menu)
+
+        setupGallerySwitchMenuButton(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -125,6 +129,21 @@ class PhotoPageFragment: VisibleFragment() {
     private fun openInBrowser(uri: Uri) {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
+    }
+
+    private fun setupGallerySwitchMenuButton(menu: Menu) {
+        val gallerySwitchButton = menu.findItem(R.id.save_for_offline)
+
+        photoPageViewModel.savedGalleryItemLiveData.observe(
+            viewLifecycleOwner,
+            Observer { savedItem ->
+                if(savedItem == null) {
+                    gallerySwitchButton.title = getString(R.string.save_into_phone)
+                } else {
+                    gallerySwitchButton.title = getString(R.string.unsave_from_phone)
+                }
+            }
+        )
     }
     //endregion
 }
