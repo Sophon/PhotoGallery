@@ -17,7 +17,7 @@ class PhotoPageViewModel: ViewModel() {
         }
 
     fun savePhoto(galleryItem: GalleryItem) {
-        photoRepository.addGalleryItem(galleryItem)
+        photoRepository.saveGalleryItem(galleryItem)
     }
 
     fun unsavePhoto(galleryItem: GalleryItem) {

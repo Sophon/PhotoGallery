@@ -83,7 +83,7 @@ class PhotoRepository private constructor(context: Context) {
 
     fun getGalleryItems(): LiveData<List<GalleryItem>> = galleryItemDao.getGalleryItems()
 
-    fun addGalleryItem(galleryItem: GalleryItem) {
+    fun saveGalleryItem(galleryItem: GalleryItem) {
         executor.execute {
             galleryItemDao.addGalleryItem(galleryItem)
         }
