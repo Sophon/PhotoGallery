@@ -104,18 +104,15 @@ class PhotoPageFragment: VisibleFragment() {
             }
 
             R.id.save_for_offline -> {
-                val responseMsg = if(fragmentBinding.progressBar.visibility == View.GONE) {
-                    photoPageViewModel.savePhoto(galleryItem)
-                    getString(R.string.screen_prompt_saved)
-                } else {
-                    getString(R.string.screen_prompt_wait)
-                }
+                lateinit var responseMsg: String
 
                 photoPageViewModel.apply {
-                    if(savedGalleryItemLiveData.value == null) {
+                    responseMsg = if(savedGalleryItemLiveData.value == null) {
                         savePhoto(galleryItem)
+                        getString(R.string.screen_prompt_saved)
                     } else {
                         unsavePhoto(galleryItem)
+                        getString(R.string.screen_prompt_unsaved)
                     }
                 }
 
