@@ -3,12 +3,14 @@ package com.bignerdranch.android.photogallery.sharedPreferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.bignerdranch.android.photogallery.model.GalleryType
 
 private const val PREF_SEARCH_QUERY = "query"
 private const val LAST_PHOTO_ID = "id"
 private const val PREF_IS_POLLING = "isPolling"
+private const val PREF_GALLERY_TYPE = "galleryType"
 
-object QueryPreferences {
+object GalleryPreferences {
 
     fun getStoredQuery(context: Context): String {
         val preference: SharedPreferences =
@@ -51,6 +53,22 @@ object QueryPreferences {
             .getDefaultSharedPreferences(context)
             .edit()
             .putBoolean(PREF_IS_POLLING, isPolling)
+            .apply()
+    }
+
+    fun getGalleryType(context: Context): GalleryType {
+        val galleryString = PreferenceManager
+            .getDefaultSharedPreferences(context)
+            .getString(PREF_GALLERY_TYPE, "")
+
+        return GalleryType.toGalleryType(galleryString)
+    }
+
+    fun setGalleryType(context: Context, galleryType: GalleryType) {
+        PreferenceManager
+            .getDefaultSharedPreferences(context)
+            .edit()
+            .putString(PREF_GALLERY_TYPE, galleryType.toString())
             .apply()
     }
 }

@@ -13,7 +13,7 @@ import androidx.work.*
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.bignerdranch.android.photogallery.model.GalleryItem
-import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
+import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
 import com.bignerdranch.android.photogallery.view.VisibleFragment
 import com.bignerdranch.android.photogallery.viewModel.gallery.PhotoGalleryViewModel
 import com.bignerdranch.android.photogallery.workers.PollPhotosWorker
@@ -94,11 +94,11 @@ class PhotoGalleryFragment: VisibleFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.gallery_menu_toggle_polling -> {
-                if(QueryPreferences.isPolling(requireContext())) {
-                    QueryPreferences.setPolling(requireContext(), false)
+                if(GalleryPreferences.isPolling(requireContext())) {
+                    GalleryPreferences.setPolling(requireContext(), false)
                     WorkManager.getInstance().cancelUniqueWork(POLL_WORK)
                 } else {
-                    QueryPreferences.setPolling(requireContext(), true)
+                    GalleryPreferences.setPolling(requireContext(), true)
                     createPeriodicPollingWork()
                 }
 
@@ -151,7 +151,7 @@ class PhotoGalleryFragment: VisibleFragment() {
     private fun setupPollingMenuButton(menu: Menu) {
         val pollingButton = menu.findItem(R.id.gallery_menu_toggle_polling)
         pollingButton.setTitle(
-            if(QueryPreferences.isPolling(requireContext())) {
+            if(GalleryPreferences.isPolling(requireContext())) {
                 R.string.stop_polling
             } else {
                 R.string.start_polling

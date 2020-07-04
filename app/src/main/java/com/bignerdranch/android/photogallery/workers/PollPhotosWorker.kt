@@ -11,7 +11,7 @@ import com.bignerdranch.android.photogallery.PhotoGalleryActivity
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.retrofit.PhotoRepository
-import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
+import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
 import timber.log.Timber
 
 class PollPhotosWorker(private val context: Context, workerParams: WorkerParameters)
@@ -29,7 +29,7 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
     //region Overrides
     override fun doWork(): Result {
         //search for photos
-        val query: String = QueryPreferences.getStoredQuery(context)
+        val query: String = GalleryPreferences.getStoredQuery(context)
 
         if(query.isBlank()) {
             Timber.d("no query, no work to be done")
@@ -41,7 +41,7 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
         if(photos.isEmpty()) { return Result.success() }
 
         //compare the newest photo with the id of the last photo
-        val lastPhotoId: String = QueryPreferences.getLastPhotoId(context)
+        val lastPhotoId: String = GalleryPreferences.getLastPhotoId(context)
         if(thereIsNewPhoto(photos, lastPhotoId)) {
             createBackgroundNotification()
         }
@@ -69,7 +69,7 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
         return if(newestPhotoId != lastPhotoId) {
             Timber.d("new photo: $newestPhotoId")
 
-            QueryPreferences.setLastPhotoId(context, newestPhotoId)
+            GalleryPreferences.setLastPhotoId(context, newestPhotoId)
 
             true
         } else {

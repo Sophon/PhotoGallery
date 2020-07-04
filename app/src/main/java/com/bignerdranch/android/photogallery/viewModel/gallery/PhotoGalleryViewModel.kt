@@ -5,7 +5,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.*
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.retrofit.PhotoRepository
-import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
+import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
 import timber.log.Timber
 
 class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
@@ -20,7 +20,7 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
     //endregion
 
     init {
-        searchQueryLiveData.value = QueryPreferences.getStoredQuery(app)
+        searchQueryLiveData.value = GalleryPreferences.getStoredQuery(app)
 
         onlineGalleryLiveData =
             Transformations.switchMap(searchQueryLiveData) { searchTerm ->
@@ -38,7 +38,7 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
     fun searchPhotos(query: String) {
         changeQuery(query)
 
-        QueryPreferences.setStoredQuery(app, query)
+        GalleryPreferences.setStoredQuery(app, query)
 
         Timber.d("stored query: $query")
     }
@@ -47,13 +47,13 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         changeQuery(query)
 
         if(query.isBlank()) {
-            QueryPreferences.setStoredQuery(app, "")
+            GalleryPreferences.setStoredQuery(app, "")
             Timber.d("empty query")
         }
     }
 
     fun setInitialQuery(searchView: SearchView) {
-        val lastQuery: String = QueryPreferences.getStoredQuery(app)
+        val lastQuery: String = GalleryPreferences.getStoredQuery(app)
 
         searchView.apply {
             setQuery(lastQuery, true)
