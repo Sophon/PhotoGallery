@@ -13,6 +13,7 @@ import androidx.work.*
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.bignerdranch.android.photogallery.model.GalleryItem
+import com.bignerdranch.android.photogallery.model.GalleryType
 import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
 import com.bignerdranch.android.photogallery.view.VisibleFragment
 import com.bignerdranch.android.photogallery.viewModel.gallery.PhotoGalleryViewModel
@@ -27,7 +28,6 @@ class PhotoGalleryFragment: VisibleFragment() {
     //region Private vars
     private lateinit var fragmentBinding: FragmentPhotoGalleryBinding
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
-    private var viewingOnline = true
     //endregion
 
     //region Lifecycle
@@ -45,32 +45,11 @@ class PhotoGalleryFragment: VisibleFragment() {
 
         inflater.inflate(R.menu.fragment_photo_gallery, menu)
 
-        val searchView: SearchView =
-            menu.findItem(R.id.gallery_menu_search).actionView as SearchView
-
-        photoGalleryViewModel.setInitialQuery(searchView)
-
-        searchView.apply {
-            setOnQueryTextListener(object: SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(queryText: String): Boolean {
-                    photoGalleryViewModel.searchPhotos(queryText)
-
-                    hideKeyboard()
-
-                    clearFocus()
-
-                    return true
-                }
-
-                override fun onQueryTextChange(queryText: String): Boolean {
-                    photoGalleryViewModel.liveSearchPhotos(queryText)
-
-                    return false
-                }
-            })
-        }
+        setupSearch(menu)
 
         setupPollingMenuButton(menu)
+
+        setupGallerySwitchMenuButton(menu)
     }
 
     override fun onCreateView(
@@ -108,15 +87,13 @@ class PhotoGalleryFragment: VisibleFragment() {
             }
 
             R.id.gallery_menu_switch_galleries -> {
-                viewingOnline = !viewingOnline
-
-                observeData(
-                    if(viewingOnline) {
-                        photoGalleryViewModel.onlineGalleryLiveData
-                    } else {
-                        photoGalleryViewModel.offlineGalleryLiveData
-                    }
-                )
+                if(GalleryPreferences.getGalleryType(requireContext()) == GalleryType.LOCAL) {
+                    GalleryPreferences.setGalleryType(requireContext(), GalleryType.ONLINE)
+                    observeData(photoGalleryViewModel.onlineGalleryLiveData)
+                } else {
+                    GalleryPreferences.setGalleryType(requireContext(), GalleryType.LOCAL)
+                    observeData(photoGalleryViewModel.offlineGalleryLiveData)
+                }
 
                 activity?.invalidateOptionsMenu()
 
@@ -128,6 +105,33 @@ class PhotoGalleryFragment: VisibleFragment() {
     //endregion
 
     //region Private funs
+    private fun setupSearch(menu: Menu) {
+        val searchView: SearchView =
+            menu.findItem(R.id.gallery_menu_search).actionView as SearchView
+
+        photoGalleryViewModel.setInitialQuery(searchView)
+
+        searchView.apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(queryText: String): Boolean {
+                    photoGalleryViewModel.searchPhotos(queryText)
+
+                    hideKeyboard()
+
+                    clearFocus()
+
+                    return true
+                }
+
+                override fun onQueryTextChange(queryText: String): Boolean {
+                    photoGalleryViewModel.liveSearchPhotos(queryText)
+
+                    return false
+                }
+            })
+        }
+    }
+
     private fun createPeriodicPollingWork() {
         Timber.d("setting up polling")
 
@@ -157,10 +161,12 @@ class PhotoGalleryFragment: VisibleFragment() {
                 R.string.start_polling
             }
         )
+    }
 
+    private fun setupGallerySwitchMenuButton(menu: Menu) {
         val galleryButton = menu.findItem(R.id.gallery_menu_switch_galleries)
         galleryButton.setTitle(
-            if(viewingOnline) {
+            if (GalleryPreferences.getGalleryType(requireContext()) == GalleryType.ONLINE) {
                 R.string.offline_gallery
             } else {
                 R.string.online_gallery
