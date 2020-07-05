@@ -9,6 +9,6 @@
 
     <item
         android:id="@+id/save_for_offline"
-        android:title="@string/save_into_phone"
+        android:title="@string/favorite_photo"
         app:showAsAction="never" />
 </menu>

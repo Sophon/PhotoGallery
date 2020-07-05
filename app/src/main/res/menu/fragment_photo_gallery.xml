@@ -21,6 +21,6 @@
 
     <item
         android:id="@+id/gallery_menu_switch_galleries"
-        android:title="@string/offline_gallery"
+        android:title="@string/favorites_gallery"
         app:showAsAction="never" />
 </menu>

@@ -10,7 +10,9 @@ import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreference
 import timber.log.Timber
 
 class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
-    //region Public vars
+
+    private val photoRepository = PhotoRepository.get()
+
     private val galleryTypeLiveData = MutableLiveData(GalleryType.ONLINE)
 
     val galleryLiveData: LiveData<List<GalleryItem>> =
@@ -18,17 +20,14 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
             if(galleryType == GalleryType.ONLINE) {
                 onlineGalleryLiveData
             } else {
-                offlineGalleryLiveData
+                favoriteGalleryLiveData
             }
         }
-    //endregion
 
-    //region Private vars
     private val onlineGalleryLiveData: LiveData<List<GalleryItem>>
-    private val offlineGalleryLiveData: LiveData<List<GalleryItem>>
-    private val photoRepository = PhotoRepository.get()
+    private val favoriteGalleryLiveData: LiveData<List<GalleryItem>>
     private val searchQueryLiveData = MutableLiveData("")
-    //endregion
+
 
     init {
         searchQueryLiveData.value = GalleryPreferences.getStoredQuery(app)
@@ -42,7 +41,7 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
                 }
             }
 
-        offlineGalleryLiveData = photoRepository.getGalleryItems()
+        favoriteGalleryLiveData = photoRepository.getGalleryItems()
     }
 
     //region Public funs
@@ -83,9 +82,9 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
             app,
             if(currentType == GalleryType.ONLINE) {
                 newType = GalleryType.ONLINE
-                GalleryType.LOCAL
+                GalleryType.FAVORITES
             } else {
-                newType = GalleryType.LOCAL
+                newType = GalleryType.FAVORITES
                 GalleryType.ONLINE
             }
         )

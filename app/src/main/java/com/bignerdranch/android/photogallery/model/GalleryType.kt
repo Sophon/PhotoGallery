@@ -3,7 +3,7 @@ package com.bignerdranch.android.photogallery.model
 import java.lang.Exception
 
 enum class GalleryType {
-    LOCAL,
+    FAVORITES,
     ONLINE;
 
     companion object {

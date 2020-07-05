@@ -45,7 +45,7 @@ class PhotoPageFragment: VisibleFragment() {
 
         photoPageViewModel =
             ViewModelProvider(this).get(PhotoPageViewModel::class.java)
-        photoPageViewModel.checkIfPhotoSaved(galleryItem.id)
+        photoPageViewModel.checkIfPhotoFavorited(galleryItem.id)
 
         setHasOptionsMenu(true)
     }
@@ -108,11 +108,11 @@ class PhotoPageFragment: VisibleFragment() {
 
                 photoPageViewModel.apply {
                     responseMsg = if(savedGalleryItemLiveData.value == null) {
-                        savePhoto(galleryItem)
-                        getString(R.string.screen_prompt_saved)
+                        favoritePhoto(galleryItem)
+                        getString(R.string.screen_prompt_favorited)
                     } else {
-                        unsavePhoto(galleryItem)
-                        getString(R.string.screen_prompt_unsaved)
+                        unfavoritePhoto(galleryItem)
+                        getString(R.string.screen_prompt_unfavorited)
                     }
                 }
 
@@ -143,9 +143,9 @@ class PhotoPageFragment: VisibleFragment() {
             viewLifecycleOwner,
             Observer { savedItem ->
                 if(savedItem == null) {
-                    gallerySwitchButton.title = getString(R.string.save_into_phone)
+                    gallerySwitchButton.title = getString(R.string.favorite_photo)
                 } else {
-                    gallerySwitchButton.title = getString(R.string.unsave_from_phone)
+                    gallerySwitchButton.title = getString(R.string.unfavorite_photo)
                 }
             }
         )

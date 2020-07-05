@@ -5,14 +5,12 @@ import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.work.*
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
-import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.model.GalleryType
 import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
 import com.bignerdranch.android.photogallery.view.VisibleFragment
@@ -173,7 +171,7 @@ class PhotoGalleryFragment: VisibleFragment() {
             if (GalleryPreferences.getGalleryType(requireContext()) == GalleryType.ONLINE) {
                 R.string.online_gallery
             } else {
-                R.string.offline_gallery
+                R.string.favorites_gallery
             }
         )
     }

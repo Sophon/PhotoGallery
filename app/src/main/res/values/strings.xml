@@ -7,7 +7,7 @@
     <string name="stop_polling">Stop polling</string>
     <string name="clear_search">Clear search</string>
     <string name="online_gallery">Show online gallery</string>
-    <string name="offline_gallery">Show offline gallery</string>
+    <string name="favorites_gallery">Show favorites gallery</string>
 
 <!--    Notification channel-->
     <string name="notification_channel_name">Flickr polling</string>
@@ -16,11 +16,10 @@
 
 <!--    Page menu-->
     <string name="open_in_browser">Open in browser</string>
-    <string name="save_into_phone">Save into phone</string>
-    <string name="unsave_from_phone">Unsave from phone</string>
+    <string name="favorite_photo">Favorite photo</string>
+    <string name="unfavorite_photo">Unfavorite photo</string>
 
 <!--    Photo page-->
-    <string name="screen_prompt_saved">Saved into phone</string>
-    <string name="screen_prompt_unsaved">Unsaved from phone</string>
-    <string name="screen_prompt_wait">Please wait for the page to load</string>
+    <string name="screen_prompt_favorited">Saved to favorites</string>
+    <string name="screen_prompt_unfavorited">Unsaved from phone</string>
 </resources>

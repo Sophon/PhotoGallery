@@ -16,15 +16,15 @@ class PhotoPageViewModel: ViewModel() {
             photoRepository.getGalleryItem(itemId)
         }
 
-    fun savePhoto(galleryItem: GalleryItem) {
+    fun favoritePhoto(galleryItem: GalleryItem) {
         photoRepository.saveGalleryItem(galleryItem)
     }
 
-    fun unsavePhoto(galleryItem: GalleryItem) {
+    fun unfavoritePhoto(galleryItem: GalleryItem) {
         photoRepository.unsaveGalleryItem(galleryItem)
     }
 
-    fun checkIfPhotoSaved(galleryItemId: String) {
+    fun checkIfPhotoFavorited(galleryItemId: String) {
         galleryItemIdLiveData.value = galleryItemId
     }
 }
