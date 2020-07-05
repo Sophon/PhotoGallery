@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import com.bignerdranch.android.photogallery.databinding.ListItemGalleryBinding
 import com.bignerdranch.android.photogallery.model.GalleryItem
 
-internal class PhotoAdapter(private val context: Context, private val galleryItems: List<GalleryItem>)
+internal class PhotoAdapter(private val context: Context)
     : ListAdapter<GalleryItem, PhotoHolder>(DiffCallback()) {
 
     private lateinit var binding: ListItemGalleryBinding
@@ -24,9 +24,7 @@ internal class PhotoAdapter(private val context: Context, private val galleryIte
     }
 
     override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
-        val galleryItem = galleryItems[position]
-
-        holder.bind(galleryItem)
+        holder.bind(getItem(position))
     }
 }
 

@@ -4,17 +4,28 @@ import android.app.Application
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.*
 import com.bignerdranch.android.photogallery.model.GalleryItem
+import com.bignerdranch.android.photogallery.model.GalleryType
 import com.bignerdranch.android.photogallery.retrofit.PhotoRepository
 import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
 import timber.log.Timber
 
 class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
     //region Public vars
-    val onlineGalleryLiveData: LiveData<List<GalleryItem>>
-    val offlineGalleryLiveData: LiveData<List<GalleryItem>>
+    private val galleryTypeLiveData = MutableLiveData(GalleryType.ONLINE)
+
+    val galleryLiveData: LiveData<List<GalleryItem>> =
+        Transformations.switchMap(galleryTypeLiveData) { galleryType ->
+            if(galleryType == GalleryType.ONLINE) {
+                onlineGalleryLiveData
+            } else {
+                offlineGalleryLiveData
+            }
+        }
     //endregion
 
     //region Private vars
+    private val onlineGalleryLiveData: LiveData<List<GalleryItem>>
+    private val offlineGalleryLiveData: LiveData<List<GalleryItem>>
     private val photoRepository = PhotoRepository.get()
     private val searchQueryLiveData = MutableLiveData("")
     //endregion
@@ -62,6 +73,24 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         }
 
         Timber.d("lastQuery: $lastQuery")
+    }
+
+    fun switchGallery() {
+        val currentType = GalleryPreferences.getGalleryType(app)
+        lateinit var newType: GalleryType
+
+        GalleryPreferences.setGalleryType(
+            app,
+            if(currentType == GalleryType.ONLINE) {
+                newType = GalleryType.ONLINE
+                GalleryType.LOCAL
+            } else {
+                newType = GalleryType.LOCAL
+                GalleryType.ONLINE
+            }
+        )
+
+        galleryTypeLiveData.value = newType
     }
     //endregion
 

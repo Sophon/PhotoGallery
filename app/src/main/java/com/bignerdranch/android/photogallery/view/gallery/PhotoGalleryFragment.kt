@@ -61,13 +61,23 @@ class PhotoGalleryFragment: VisibleFragment() {
 
         fragmentBinding.galleryRecyclerView.layoutManager = GridLayoutManager(context, 3)
 
+        fragmentBinding.galleryRecyclerView.apply {
+            layoutManager = GridLayoutManager(context, 3)
+            adapter = PhotoAdapter(requireContext())
+        }
+
         return fragmentBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        observeData(photoGalleryViewModel.onlineGalleryLiveData)
+        photoGalleryViewModel.galleryLiveData.observe(
+            viewLifecycleOwner,
+            Observer { galleryItems ->
+                (fragmentBinding.galleryRecyclerView.adapter as PhotoAdapter).submitList(galleryItems)
+            }
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -87,13 +97,7 @@ class PhotoGalleryFragment: VisibleFragment() {
             }
 
             R.id.gallery_menu_switch_galleries -> {
-                if(GalleryPreferences.getGalleryType(requireContext()) == GalleryType.LOCAL) {
-                    GalleryPreferences.setGalleryType(requireContext(), GalleryType.ONLINE)
-                    observeData(photoGalleryViewModel.onlineGalleryLiveData)
-                } else {
-                    GalleryPreferences.setGalleryType(requireContext(), GalleryType.LOCAL)
-                    observeData(photoGalleryViewModel.offlineGalleryLiveData)
-                }
+                photoGalleryViewModel.switchGallery()
 
                 activity?.invalidateOptionsMenu()
 
@@ -167,19 +171,9 @@ class PhotoGalleryFragment: VisibleFragment() {
         val galleryButton = menu.findItem(R.id.gallery_menu_switch_galleries)
         galleryButton.setTitle(
             if (GalleryPreferences.getGalleryType(requireContext()) == GalleryType.ONLINE) {
-                R.string.offline_gallery
-            } else {
                 R.string.online_gallery
-            }
-        )
-    }
-
-    private fun observeData(liveDataSource: LiveData<List<GalleryItem>>) {
-        liveDataSource.observe(
-            viewLifecycleOwner,
-            Observer { galleryItems ->
-                fragmentBinding.galleryRecyclerView.adapter =
-                    PhotoAdapter(requireContext(), galleryItems)
+            } else {
+                R.string.offline_gallery
             }
         )
     }
