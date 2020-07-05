@@ -10,11 +10,14 @@ import com.bignerdranch.android.photogallery.retrofit.PhotoRepository
 class PhotoPageViewModel: ViewModel() {
 
     private val photoRepository = PhotoRepository.get()
+
+    //region LiveData
     private var galleryItemIdLiveData = MutableLiveData<String>()
     var savedGalleryItemLiveData: LiveData<GalleryItem?> =
         Transformations.switchMap(galleryItemIdLiveData) { itemId ->
             photoRepository.getGalleryItem(itemId)
         }
+    //endregion
 
     fun favoritePhoto(galleryItem: GalleryItem) {
         photoRepository.saveGalleryItem(galleryItem)

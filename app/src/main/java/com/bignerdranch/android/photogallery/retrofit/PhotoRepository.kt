@@ -21,6 +21,7 @@ import java.util.concurrent.Executors
 private const val DB_NAME = "gallery_item_database"
 
 class PhotoRepository private constructor(context: Context) {
+
     //region Flickr
     private val flickrApi: FlickrApi
     private lateinit var flickrRequest: Call<FlickrResponse>
@@ -65,12 +66,16 @@ class PhotoRepository private constructor(context: Context) {
         }
     }
 
-    //region Public funs
+    //region Load
     fun fetchInterestingPhotos()
         : LiveData<List<GalleryItem>> {
         return getPhotos(flickrApi.fetchInterestingness())
     }
 
+    fun getGalleryItems(): LiveData<List<GalleryItem>> = galleryItemDao.getGalleryItems()
+    //endregion
+
+    //region Search
     fun searchPhotosRequest(query: String): Call<FlickrResponse> {
         return flickrApi.searchPhotos(query)
     }
@@ -78,10 +83,10 @@ class PhotoRepository private constructor(context: Context) {
     fun searchPhotos(query: String): LiveData<List<GalleryItem>> {
         return getPhotos(flickrApi.searchPhotos(query))
     }
+    //endregion
 
+    //region Specific item
     fun getGalleryItem(id: String): LiveData<GalleryItem?> = galleryItemDao.getGalleryItem(id)
-
-    fun getGalleryItems(): LiveData<List<GalleryItem>> = galleryItemDao.getGalleryItems()
 
     fun saveGalleryItem(galleryItem: GalleryItem) {
         executor.execute {
@@ -96,7 +101,6 @@ class PhotoRepository private constructor(context: Context) {
     }
     //endregion
 
-    //region Private funs
     private fun getPhotos(
         flickrRequest: Call<FlickrResponse> = flickrApi.fetchInterestingness()
     ): LiveData<List<GalleryItem>> {
@@ -126,5 +130,4 @@ class PhotoRepository private constructor(context: Context) {
 
         return responseLiveData
     }
-    //endregion
 }

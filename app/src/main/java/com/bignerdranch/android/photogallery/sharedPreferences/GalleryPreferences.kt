@@ -12,6 +12,7 @@ private const val PREF_GALLERY_TYPE = "galleryType"
 
 object GalleryPreferences {
 
+    //region Query
     fun getStoredQuery(context: Context): String {
         val preference: SharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(context)
@@ -41,7 +42,9 @@ object GalleryPreferences {
             .putString(LAST_PHOTO_ID, lastPhotoId)
             .apply()
     }
+    //endregion
 
+    //region Polling
     fun isPolling(context: Context): Boolean {
         return PreferenceManager
             .getDefaultSharedPreferences(context)
@@ -55,7 +58,9 @@ object GalleryPreferences {
             .putBoolean(PREF_IS_POLLING, isPolling)
             .apply()
     }
+    //endregion
 
+    //region Gallery
     fun getGalleryType(context: Context): GalleryType {
         val galleryString = PreferenceManager
             .getDefaultSharedPreferences(context)
@@ -71,4 +76,5 @@ object GalleryPreferences {
             .putString(PREF_GALLERY_TYPE, galleryType.toString())
             .apply()
     }
+    //endregion
 }

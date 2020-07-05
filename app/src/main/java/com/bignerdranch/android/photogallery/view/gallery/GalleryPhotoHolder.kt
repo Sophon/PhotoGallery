@@ -15,7 +15,7 @@ internal class PhotoHolder(
     binding: ListItemGalleryBinding
 ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
 
-    //region Private vars
+    //region Vars
     private val imageView: AppCompatImageView = binding.galleryItemImageView
     private lateinit var galleryItem: GalleryItem
     //endregion

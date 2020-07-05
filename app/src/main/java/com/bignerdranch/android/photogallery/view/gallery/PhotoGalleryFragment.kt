@@ -17,10 +17,8 @@ import com.bignerdranch.android.photogallery.viewModel.gallery.PhotoGalleryViewM
 
 class PhotoGalleryFragment: VisibleFragment() {
 
-    //region Private vars
     private lateinit var fragmentBinding: FragmentPhotoGalleryBinding
     private lateinit var photoGalleryViewModel: PhotoGalleryViewModel
-    //endregion
 
     //region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,7 +92,7 @@ class PhotoGalleryFragment: VisibleFragment() {
     }
     //endregion
 
-    //region Private funs
+    //region Setup
     private fun setupSearch(menu: Menu) {
         val searchView: SearchView =
             menu.findItem(R.id.gallery_menu_search).actionView as SearchView
@@ -145,11 +143,9 @@ class PhotoGalleryFragment: VisibleFragment() {
     }
     //endregion
 
-    //region Extension funs
     private fun View.hideKeyboard() {
         val inputMethodManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }
-    //endregion
 }

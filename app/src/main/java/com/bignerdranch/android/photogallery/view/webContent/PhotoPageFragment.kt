@@ -21,7 +21,7 @@ private const val ARG_GALLERY_ITEM = "gallery_item"
 
 class PhotoPageFragment: VisibleFragment() {
 
-    //region Private vars
+    //region vars
     private lateinit var fragmentBinding: FragmentPhotoPageBinding
     private lateinit var photoPageViewModel: PhotoPageViewModel
     private lateinit var galleryItem: GalleryItem
@@ -130,7 +130,6 @@ class PhotoPageFragment: VisibleFragment() {
     }
     //endregion
 
-    //region Private funs
     private fun openInBrowser(uri: Uri) {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
@@ -150,5 +149,4 @@ class PhotoPageFragment: VisibleFragment() {
             }
         )
     }
-    //endregion
 }

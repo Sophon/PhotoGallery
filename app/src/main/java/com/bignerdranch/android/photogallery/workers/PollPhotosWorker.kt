@@ -26,7 +26,6 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
         const val NOTIFICATION = "NOTIFICATION"
     }
 
-    //region Overrides
     override fun doWork(): Result {
         //search for photos
         val query: String = GalleryPreferences.getStoredQuery(context)
@@ -48,9 +47,7 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
 
         return Result.success()
     }
-    //endregion
 
-    //region Private funs
     private fun searchPhotos(query: String): List<GalleryItem> {
         return PhotoRepository.get().searchPhotosRequest(query)
             .execute()
@@ -103,5 +100,4 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
 
         context.sendOrderedBroadcast(notificationIntent, PERM_PRIVATE)
     }
-    //endregion
 }

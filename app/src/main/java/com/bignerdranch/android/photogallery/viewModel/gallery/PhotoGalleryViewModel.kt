@@ -18,6 +18,7 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
 
     private val photoRepository = PhotoRepository.get()
 
+    //region LiveData
     private val galleryTypeLiveData = MutableLiveData(GalleryType.ONLINE)
 
     val galleryLiveData: LiveData<List<GalleryItem>> =
@@ -32,7 +33,7 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
     private val onlineGalleryLiveData: LiveData<List<GalleryItem>>
     private val favoriteGalleryLiveData: LiveData<List<GalleryItem>>
     private val searchQueryLiveData = MutableLiveData("")
-
+    //endregion
 
     init {
         searchQueryLiveData.value = GalleryPreferences.getStoredQuery(app)
@@ -49,7 +50,7 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         favoriteGalleryLiveData = photoRepository.getGalleryItems()
     }
 
-    //region Public funs
+    //region Search
     fun searchPhotos(query: String) {
         changeQuery(query)
 
@@ -79,24 +80,12 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         Timber.d("lastQuery: $lastQuery")
     }
 
-    fun switchGallery() {
-        val currentType = GalleryPreferences.getGalleryType(app)
-        lateinit var newType: GalleryType
-
-        GalleryPreferences.setGalleryType(
-            app,
-            if(currentType == GalleryType.ONLINE) {
-                newType = GalleryType.ONLINE
-                GalleryType.FAVORITES
-            } else {
-                newType = GalleryType.FAVORITES
-                GalleryType.ONLINE
-            }
-        )
-
-        galleryTypeLiveData.value = newType
+    private fun changeQuery(query: String) {
+        searchQueryLiveData.value = query
     }
+    //endregion
 
+    //region Polling
     fun togglePolling() {
         val pollingActive = GalleryPreferences.isPolling(app)
 
@@ -107,12 +96,6 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         }
 
         GalleryPreferences.setPolling(app, !pollingActive)
-    }
-    //endregion
-
-    //region Private funs
-    private fun changeQuery(query: String) {
-        searchQueryLiveData.value = query
     }
 
     private fun createPeriodicPollingWork() {
@@ -135,4 +118,23 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         )
     }
     //endregion
+
+    fun switchGallery() {
+        val currentType = GalleryPreferences.getGalleryType(app)
+        lateinit var newType: GalleryType
+
+        GalleryPreferences.setGalleryType(
+            app,
+            if(currentType == GalleryType.ONLINE) {
+                newType = GalleryType.ONLINE
+                GalleryType.FAVORITES
+            } else {
+                newType = GalleryType.FAVORITES
+                GalleryType.ONLINE
+            }
+        )
+
+        galleryTypeLiveData.value = newType
+    }
+
 }
