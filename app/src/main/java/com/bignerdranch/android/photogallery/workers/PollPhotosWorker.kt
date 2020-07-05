@@ -67,13 +67,13 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
         val newestPhotoId: String =  photos.first().id
 
         return if(newestPhotoId != lastPhotoId) {
-            Timber.d("new photo: $newestPhotoId")
+            Timber.d("Polling: new photo: $newestPhotoId")
 
             GalleryPreferences.setLastPhotoId(context, newestPhotoId)
 
             true
         } else {
-            Timber.d("old photo: $newestPhotoId")
+            Timber.d("Polling: old photo: $newestPhotoId")
 
             false
         }
