@@ -3,11 +3,16 @@ package com.bignerdranch.android.photogallery.viewModel.gallery
 import android.app.Application
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.*
+import androidx.work.*
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.model.GalleryType
 import com.bignerdranch.android.photogallery.retrofit.PhotoRepository
 import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
+import com.bignerdranch.android.photogallery.workers.PollPhotosWorker
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
+
+private const val POLL_WORK = "POLL_WORK"
 
 class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
 
@@ -91,11 +96,43 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
 
         galleryTypeLiveData.value = newType
     }
+
+    fun togglePolling() {
+        val pollingActive = GalleryPreferences.isPolling(app)
+
+        if(pollingActive) {
+            WorkManager.getInstance().cancelUniqueWork(POLL_WORK)
+        } else {
+            createPeriodicPollingWork()
+        }
+
+        GalleryPreferences.setPolling(app, !pollingActive)
+    }
     //endregion
 
     //region Private funs
     private fun changeQuery(query: String) {
         searchQueryLiveData.value = query
+    }
+
+    private fun createPeriodicPollingWork() {
+        Timber.d("Polling: setting up")
+
+        val pollConstraints = Constraints
+            .Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .build()
+
+        val periodicWorkRequest: PeriodicWorkRequest = PeriodicWorkRequest
+            .Builder(PollPhotosWorker::class.java, 15, TimeUnit.MINUTES)
+            .setConstraints(pollConstraints)
+            .build()
+
+        WorkManager.getInstance().enqueueUniquePeriodicWork(
+            POLL_WORK,
+            ExistingPeriodicWorkPolicy.KEEP,
+            periodicWorkRequest
+        )
     }
     //endregion
 }

@@ -8,18 +8,12 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.work.*
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoGalleryBinding
 import com.bignerdranch.android.photogallery.model.GalleryType
 import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
 import com.bignerdranch.android.photogallery.view.VisibleFragment
 import com.bignerdranch.android.photogallery.viewModel.gallery.PhotoGalleryViewModel
-import com.bignerdranch.android.photogallery.workers.PollPhotosWorker
-import timber.log.Timber
-import java.util.concurrent.TimeUnit
-
-private const val POLL_WORK = "POLL_WORK"
 
 class PhotoGalleryFragment: VisibleFragment() {
 
@@ -81,13 +75,7 @@ class PhotoGalleryFragment: VisibleFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.gallery_menu_toggle_polling -> {
-                if(GalleryPreferences.isPolling(requireContext())) {
-                    GalleryPreferences.setPolling(requireContext(), false)
-                    WorkManager.getInstance().cancelUniqueWork(POLL_WORK)
-                } else {
-                    GalleryPreferences.setPolling(requireContext(), true)
-                    createPeriodicPollingWork()
-                }
+                photoGalleryViewModel.togglePolling()
 
                 activity?.invalidateOptionsMenu()
 
@@ -132,26 +120,6 @@ class PhotoGalleryFragment: VisibleFragment() {
                 }
             })
         }
-    }
-
-    private fun createPeriodicPollingWork() {
-        Timber.d("setting up polling")
-
-        val pollConstraints = Constraints
-            .Builder()
-            .setRequiredNetworkType(NetworkType.UNMETERED)
-            .build()
-
-        val periodicWorkRequest: PeriodicWorkRequest = PeriodicWorkRequest
-            .Builder(PollPhotosWorker::class.java, 15, TimeUnit.MINUTES)
-            .setConstraints(pollConstraints)
-            .build()
-
-        WorkManager.getInstance().enqueueUniquePeriodicWork(
-            POLL_WORK,
-            ExistingPeriodicWorkPolicy.KEEP,
-            periodicWorkRequest
-        )
     }
 
     private fun setupPollingMenuButton(menu: Menu) {
