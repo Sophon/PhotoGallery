@@ -6,13 +6,16 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.bignerdranch.android.photogallery.R
+import com.bignerdranch.android.photogallery.model.GalleryItem
+
+private const val ARG_GALLERY_ITEM = "gallery_item"
 
 class PhotoPageActivity: AppCompatActivity() {
 
     companion object {
-        fun newIntent(context: Context, photoPageUri: Uri): Intent {
+        fun newIntent(context: Context, galleryItem: GalleryItem): Intent {
             return Intent(context, PhotoPageActivity::class.java).apply {
-                data = photoPageUri
+                putExtra(ARG_GALLERY_ITEM, galleryItem)
             }
         }
     }
@@ -28,7 +31,9 @@ class PhotoPageActivity: AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.photo_page_fragment_container)
 
         if(currentFragment == null) {
-            val fragment = PhotoPageFragment.newInstance(intent.data!!)
+            val fragment = PhotoPageFragment.newInstance(
+                intent.extras!!.get(ARG_GALLERY_ITEM) as GalleryItem
+            )
 
             fragmentManager.beginTransaction()
                 .add(R.id.photo_page_fragment_container, fragment)
