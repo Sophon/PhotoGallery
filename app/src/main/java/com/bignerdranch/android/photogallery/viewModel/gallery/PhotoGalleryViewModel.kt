@@ -119,24 +119,6 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
     }
     //endregion
 
-    fun switchGallery() {
-        val currentType = GalleryPreferences.getGalleryType(app)
-        lateinit var newType: GalleryType
-
-        GalleryPreferences.setGalleryType(
-            app,
-            if(currentType == GalleryType.ONLINE) {
-                newType = GalleryType.ONLINE
-                GalleryType.FAVORITES
-            } else {
-                newType = GalleryType.FAVORITES
-                GalleryType.ONLINE
-            }
-        )
-
-        galleryTypeLiveData.value = newType
-    }
-
     fun switchGalleryTo(newGalleryType: GalleryType) {
         GalleryPreferences.setGalleryType(app, newGalleryType)
         galleryTypeLiveData.value = newGalleryType

@@ -39,8 +39,6 @@ class PhotoGalleryFragment: VisibleFragment() {
         setupSearch(menu)
 
         setupPollingMenuButton(menu)
-
-        setupGallerySwitchMenuButton(menu)
     }
 
     override fun onCreateView(
@@ -75,14 +73,6 @@ class PhotoGalleryFragment: VisibleFragment() {
         return when(item.itemId) {
             R.id.gallery_menu_toggle_polling -> {
                 photoGalleryViewModel.togglePolling()
-
-                activity?.invalidateOptionsMenu()
-
-                return true
-            }
-
-            R.id.gallery_menu_switch_galleries -> {
-                photoGalleryViewModel.switchGallery()
 
                 activity?.invalidateOptionsMenu()
 
@@ -128,17 +118,6 @@ class PhotoGalleryFragment: VisibleFragment() {
                 R.string.stop_polling
             } else {
                 R.string.start_polling
-            }
-        )
-    }
-
-    private fun setupGallerySwitchMenuButton(menu: Menu) {
-        val galleryButton = menu.findItem(R.id.gallery_menu_switch_galleries)
-        galleryButton.setTitle(
-            if (GalleryPreferences.getGalleryType(requireContext()) == GalleryType.ONLINE) {
-                R.string.online_gallery
-            } else {
-                R.string.favorites_gallery
             }
         )
     }

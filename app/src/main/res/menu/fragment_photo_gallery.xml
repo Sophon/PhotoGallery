@@ -18,9 +18,4 @@
         android:id="@+id/gallery_menu_item_clear"
         android:title="@string/clear_search"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/gallery_menu_switch_galleries"
-        android:title="@string/favorites_gallery"
-        app:showAsAction="never" />
 </menu>

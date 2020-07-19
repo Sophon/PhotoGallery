@@ -41,7 +41,7 @@ class PhotoGalleryActivity : AppCompatActivity() {
     private fun setupBottomNavigation(navigationView: BottomNavigationView) {
         navigationView.setOnNavigationItemSelectedListener { navigationItem ->
             when(navigationItem.itemId) {
-                R.id.botNav_web -> {
+                R.id.botNav_online -> {
                     galleryType.value = GalleryType.ONLINE
                 }
                 else -> {
@@ -54,7 +54,7 @@ class PhotoGalleryActivity : AppCompatActivity() {
 
         navigationView.selectedItemId =
             when(GalleryPreferences.getGalleryType(this)) {
-                GalleryType.ONLINE -> R.id.botNav_web
+                GalleryType.ONLINE -> R.id.botNav_online
                 else -> R.id.botNav_favorites
             }
     }
