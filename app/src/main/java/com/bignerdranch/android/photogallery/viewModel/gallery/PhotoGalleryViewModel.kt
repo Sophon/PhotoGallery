@@ -3,39 +3,58 @@ package com.bignerdranch.android.photogallery.viewModel.gallery
 import android.app.Application
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.*
+import androidx.work.*
 import com.bignerdranch.android.photogallery.model.GalleryItem
-import com.bignerdranch.android.photogallery.retrofit.FlickrRepository
-import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
+import com.bignerdranch.android.photogallery.model.GalleryType
+import com.bignerdranch.android.photogallery.retrofit.PhotoRepository
+import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
+import com.bignerdranch.android.photogallery.workers.PollPhotosWorker
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
+
+private const val POLL_WORK = "POLL_WORK"
 
 class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app) {
-    //region Public vars
-    val galleryItemLiveData: LiveData<List<GalleryItem>>
-    //endregion
 
-    //region Private vars
-    private val flickrRepository = FlickrRepository()
+    private val photoRepository = PhotoRepository.get()
+
+    //region LiveData
+    private val galleryTypeLiveData = MutableLiveData(GalleryType.ONLINE)
+
+    val galleryLiveData: LiveData<List<GalleryItem>> =
+        Transformations.switchMap(galleryTypeLiveData) { galleryType ->
+            if(galleryType == GalleryType.ONLINE) {
+                onlineGalleryLiveData
+            } else {
+                favoriteGalleryLiveData
+            }
+        }
+
+    private val onlineGalleryLiveData: LiveData<List<GalleryItem>>
+    private val favoriteGalleryLiveData: LiveData<List<GalleryItem>>
     private val searchQueryLiveData = MutableLiveData("")
     //endregion
 
     init {
-        searchQueryLiveData.value = QueryPreferences.getStoredQuery(app)
+        searchQueryLiveData.value = GalleryPreferences.getStoredQuery(app)
 
-        galleryItemLiveData =
+        onlineGalleryLiveData =
             Transformations.switchMap(searchQueryLiveData) { searchTerm ->
                 if(searchTerm.isBlank()) {
-                    flickrRepository.fetchInterestingPhotos()
+                    photoRepository.fetchInterestingPhotos()
                 } else {
-                    flickrRepository.searchPhotos(searchTerm)
+                    photoRepository.searchPhotos(searchTerm)
                 }
             }
+
+        favoriteGalleryLiveData = photoRepository.getGalleryItems()
     }
 
-    //region Public funs
+    //region Search
     fun searchPhotos(query: String) {
         changeQuery(query)
 
-        QueryPreferences.setStoredQuery(app, query)
+        GalleryPreferences.setStoredQuery(app, query)
 
         Timber.d("stored query: $query")
     }
@@ -44,13 +63,13 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         changeQuery(query)
 
         if(query.isBlank()) {
-            QueryPreferences.setStoredQuery(app, "")
+            GalleryPreferences.setStoredQuery(app, "")
             Timber.d("empty query")
         }
     }
 
     fun setInitialQuery(searchView: SearchView) {
-        val lastQuery: String = QueryPreferences.getStoredQuery(app)
+        val lastQuery: String = GalleryPreferences.getStoredQuery(app)
 
         searchView.apply {
             setQuery(lastQuery, true)
@@ -60,11 +79,49 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
 
         Timber.d("lastQuery: $lastQuery")
     }
-    //endregion
 
-    //region Private funs
     private fun changeQuery(query: String) {
         searchQueryLiveData.value = query
     }
     //endregion
+
+    //region Polling
+    fun togglePolling() {
+        val pollingActive = GalleryPreferences.isPolling(app)
+
+        if(pollingActive) {
+            WorkManager.getInstance().cancelUniqueWork(POLL_WORK)
+        } else {
+            createPeriodicPollingWork()
+        }
+
+        GalleryPreferences.setPolling(app, !pollingActive)
+    }
+
+    private fun createPeriodicPollingWork() {
+        Timber.d("Polling: setting up")
+
+        val pollConstraints = Constraints
+            .Builder()
+            .setRequiredNetworkType(NetworkType.UNMETERED)
+            .build()
+
+        val periodicWorkRequest: PeriodicWorkRequest = PeriodicWorkRequest
+            .Builder(PollPhotosWorker::class.java, 15, TimeUnit.MINUTES)
+            .setConstraints(pollConstraints)
+            .build()
+
+        WorkManager.getInstance().enqueueUniquePeriodicWork(
+            POLL_WORK,
+            ExistingPeriodicWorkPolicy.KEEP,
+            periodicWorkRequest
+        )
+    }
+    //endregion
+
+    fun switchGalleryTo(newGalleryType: GalleryType) {
+        GalleryPreferences.setGalleryType(app, newGalleryType)
+        galleryTypeLiveData.value = newGalleryType
+    }
+
 }

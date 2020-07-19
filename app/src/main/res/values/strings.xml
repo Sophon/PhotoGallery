@@ -14,4 +14,10 @@
 
 <!--    Page menu-->
     <string name="open_in_browser">Open in browser</string>
+    <string name="favorite_photo">Favorite photo</string>
+    <string name="unfavorite_photo">Unfavorite photo</string>
+
+<!--    Photo page-->
+    <string name="screen_prompt_favorited">Saved to favorites</string>
+    <string name="screen_prompt_unfavorited">Unsaved from phone</string>
 </resources>

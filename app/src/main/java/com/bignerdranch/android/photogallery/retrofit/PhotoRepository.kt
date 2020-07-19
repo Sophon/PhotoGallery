@@ -1,21 +1,41 @@
 package com.bignerdranch.android.photogallery.retrofit
 
+import android.content.Context
+import android.widget.Gallery
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.room.Room
 import com.bignerdranch.android.photogallery.api.flickr.FlickrApi
 import com.bignerdranch.android.photogallery.api.flickr.FlickrResponse
 import com.bignerdranch.android.photogallery.api.flickr.PhotoInterceptor
 import com.bignerdranch.android.photogallery.api.flickr.PhotoResponse
+import com.bignerdranch.android.photogallery.database.GalleryItemDatabase
 import com.bignerdranch.android.photogallery.model.GalleryItem
 import okhttp3.OkHttpClient
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
+import java.lang.IllegalStateException
+import java.util.concurrent.Executors
 
-class FlickrRepository {
-    //region Private vars
+private const val DB_NAME = "gallery_item_database"
+
+class PhotoRepository private constructor(context: Context) {
+
+    //region Flickr
     private val flickrApi: FlickrApi
     private lateinit var flickrRequest: Call<FlickrResponse>
+    //endregion
+
+    //region Database
+    private val database: GalleryItemDatabase = Room.databaseBuilder(
+        context.applicationContext,
+        GalleryItemDatabase::class.java,
+        DB_NAME
+    ).build()
+
+    private val galleryItemDao = database.galleryItemDao()
+    private val executor = Executors.newSingleThreadExecutor()
     //endregion
 
     init {
@@ -32,12 +52,30 @@ class FlickrRepository {
         flickrApi = retrofit.create(FlickrApi::class.java)
     }
 
-    //region Public funs
+    companion object {
+        private var INSTANCE: PhotoRepository? = null
+
+        fun initialize(context: Context) {
+            if(INSTANCE == null) {
+                INSTANCE = PhotoRepository(context)
+            }
+        }
+
+        fun get(): PhotoRepository {
+            return INSTANCE ?: throw IllegalStateException("PhotoRepository must be initialized!")
+        }
+    }
+
+    //region Load
     fun fetchInterestingPhotos()
         : LiveData<List<GalleryItem>> {
         return getPhotos(flickrApi.fetchInterestingness())
     }
 
+    fun getGalleryItems(): LiveData<List<GalleryItem>> = galleryItemDao.getGalleryItems()
+    //endregion
+
+    //region Search
     fun searchPhotosRequest(query: String): Call<FlickrResponse> {
         return flickrApi.searchPhotos(query)
     }
@@ -47,7 +85,22 @@ class FlickrRepository {
     }
     //endregion
 
-    //region Private funs
+    //region Specific item
+    fun getGalleryItem(id: String): LiveData<GalleryItem?> = galleryItemDao.getGalleryItem(id)
+
+    fun saveGalleryItem(galleryItem: GalleryItem) {
+        executor.execute {
+            galleryItemDao.addGalleryItem(galleryItem)
+        }
+    }
+
+    fun unsaveGalleryItem(galleryItem: GalleryItem) {
+        executor.execute {
+            galleryItemDao.deleteGalleryItem(galleryItem)
+        }
+    }
+    //endregion
+
     private fun getPhotos(
         flickrRequest: Call<FlickrResponse> = flickrApi.fetchInterestingness()
     ): LiveData<List<GalleryItem>> {
@@ -77,5 +130,4 @@ class FlickrRepository {
 
         return responseLiveData
     }
-    //endregion
 }

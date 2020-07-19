@@ -3,16 +3,16 @@ package com.bignerdranch.android.photogallery.view.gallery
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import com.bignerdranch.android.photogallery.databinding.ListItemGalleryBinding
 import com.bignerdranch.android.photogallery.model.GalleryItem
 
-internal class PhotoAdapter(private val context: Context, private val galleryItems: List<GalleryItem>)
-    : RecyclerView.Adapter<PhotoHolder>() {
+internal class PhotoAdapter(private val context: Context)
+    : ListAdapter<GalleryItem, PhotoHolder>(DiffCallback()) {
 
     private lateinit var binding: ListItemGalleryBinding
 
-    //region Overrides
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
         binding = ListItemGalleryBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -24,11 +24,17 @@ internal class PhotoAdapter(private val context: Context, private val galleryIte
     }
 
     override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
-        val galleryItem: GalleryItem = galleryItems[position]
+        holder.bind(getItem(position))
+    }
+}
 
-        holder.bind(galleryItem)
+internal class DiffCallback: DiffUtil.ItemCallback<GalleryItem>() {
+
+    override fun areItemsTheSame(oldItem: GalleryItem, newItem: GalleryItem): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    override fun getItemCount(): Int = galleryItems.count()
-    //endregion
+    override fun areContentsTheSame(oldItem: GalleryItem, newItem: GalleryItem): Boolean {
+        return areItemsTheSame(oldItem, newItem)
+    }
 }

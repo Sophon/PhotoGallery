@@ -8,25 +8,30 @@ import android.view.*
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.databinding.FragmentPhotoPageBinding
+import com.bignerdranch.android.photogallery.model.GalleryItem
 import com.bignerdranch.android.photogallery.view.VisibleFragment
 
-private const val ARG_URI = "photo_page_uri"
+private const val ARG_GALLERY_ITEM = "gallery_item"
 
 class PhotoPageFragment: VisibleFragment() {
 
-    //region Private vars
+    //region vars
     private lateinit var fragmentBinding: FragmentPhotoPageBinding
-    private lateinit var uri: Uri
+    private lateinit var photoPageViewModel: PhotoPageViewModel
+    private lateinit var galleryItem: GalleryItem
     //endregion
 
     companion object {
-        fun newInstance(uri: Uri): PhotoPageFragment {
+        fun newInstance(galleryItem: GalleryItem): PhotoPageFragment {
             return PhotoPageFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(ARG_URI, uri)
+                    putParcelable(ARG_GALLERY_ITEM, galleryItem)
                 }
             }
         }
@@ -36,7 +41,11 @@ class PhotoPageFragment: VisibleFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        uri = arguments?.getParcelable(ARG_URI) ?: Uri.EMPTY
+        galleryItem = arguments?.getParcelable(ARG_GALLERY_ITEM)!!
+
+        photoPageViewModel =
+            ViewModelProvider(this).get(PhotoPageViewModel::class.java)
+        photoPageViewModel.checkIfPhotoFavorited(galleryItem.id)
 
         setHasOptionsMenu(true)
     }
@@ -53,7 +62,7 @@ class PhotoPageFragment: VisibleFragment() {
         fragmentBinding.progressBar.max = 100
 
         fragmentBinding.webView.apply {
-            loadUrl(uri.toString())
+            loadUrl(galleryItem.photoPageUri.toString())
             settings.javaScriptEnabled = true
             webViewClient = WebViewClient()
 
@@ -82,24 +91,62 @@ class PhotoPageFragment: VisibleFragment() {
         super.onCreateOptionsMenu(menu, inflater)
 
         inflater.inflate(R.menu.fragment_photo_page, menu)
+
+        setupGallerySwitchMenuButton(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.page_menu_open_in_browser -> {
-                openInBrowser(uri)
+                openInBrowser(galleryItem.photoPageUri)
 
                 return true
             }
+
+            R.id.save_for_offline -> {
+                lateinit var responseMsg: String
+
+                photoPageViewModel.apply {
+                    responseMsg = if(savedGalleryItemLiveData.value == null) {
+                        favoritePhoto(galleryItem)
+                        getString(R.string.screen_prompt_favorited)
+                    } else {
+                        unfavoritePhoto(galleryItem)
+                        getString(R.string.screen_prompt_unfavorited)
+                    }
+                }
+
+                Toast.makeText(
+                    requireContext(),
+                    responseMsg,
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
     //endregion
 
-    //region Private funs
     private fun openInBrowser(uri: Uri) {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
     }
-    //endregion
+
+    private fun setupGallerySwitchMenuButton(menu: Menu) {
+        val gallerySwitchButton = menu.findItem(R.id.save_for_offline)
+
+        photoPageViewModel.savedGalleryItemLiveData.observe(
+            viewLifecycleOwner,
+            Observer { savedItem ->
+                if(savedItem == null) {
+                    gallerySwitchButton.title = getString(R.string.favorite_photo)
+                } else {
+                    gallerySwitchButton.title = getString(R.string.unfavorite_photo)
+                }
+            }
+        )
+    }
 }

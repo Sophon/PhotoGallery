@@ -4,15 +4,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.bignerdranch.android.photogallery.NOTIFICATION_CHANNEL_ID
 import com.bignerdranch.android.photogallery.PhotoGalleryActivity
 import com.bignerdranch.android.photogallery.R
 import com.bignerdranch.android.photogallery.model.GalleryItem
-import com.bignerdranch.android.photogallery.retrofit.FlickrRepository
-import com.bignerdranch.android.photogallery.sharedPreferences.QueryPreferences
+import com.bignerdranch.android.photogallery.retrofit.PhotoRepository
+import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
 import timber.log.Timber
 
 class PollPhotosWorker(private val context: Context, workerParams: WorkerParameters)
@@ -27,10 +26,9 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
         const val NOTIFICATION = "NOTIFICATION"
     }
 
-    //region Overrides
     override fun doWork(): Result {
         //search for photos
-        val query: String = QueryPreferences.getStoredQuery(context)
+        val query: String = GalleryPreferences.getStoredQuery(context)
 
         if(query.isBlank()) {
             Timber.d("no query, no work to be done")
@@ -42,18 +40,16 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
         if(photos.isEmpty()) { return Result.success() }
 
         //compare the newest photo with the id of the last photo
-        val lastPhotoId: String = QueryPreferences.getLastPhotoId(context)
+        val lastPhotoId: String = GalleryPreferences.getLastPhotoId(context)
         if(thereIsNewPhoto(photos, lastPhotoId)) {
             createBackgroundNotification()
         }
 
         return Result.success()
     }
-    //endregion
 
-    //region Private funs
     private fun searchPhotos(query: String): List<GalleryItem> {
-        return FlickrRepository().searchPhotosRequest(query)
+        return PhotoRepository.get().searchPhotosRequest(query)
             .execute()
             .body()
             ?.photos
@@ -68,13 +64,13 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
         val newestPhotoId: String =  photos.first().id
 
         return if(newestPhotoId != lastPhotoId) {
-            Timber.d("new photo: $newestPhotoId")
+            Timber.d("Polling: new photo: $newestPhotoId")
 
-            QueryPreferences.setLastPhotoId(context, newestPhotoId)
+            GalleryPreferences.setLastPhotoId(context, newestPhotoId)
 
             true
         } else {
-            Timber.d("old photo: $newestPhotoId")
+            Timber.d("Polling: old photo: $newestPhotoId")
 
             false
         }
@@ -104,5 +100,4 @@ class PollPhotosWorker(private val context: Context, workerParams: WorkerParamet
 
         context.sendOrderedBroadcast(notificationIntent, PERM_PRIVATE)
     }
-    //endregion
 }

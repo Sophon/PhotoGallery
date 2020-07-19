@@ -3,13 +3,16 @@ package com.bignerdranch.android.photogallery.sharedPreferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.bignerdranch.android.photogallery.model.GalleryType
 
 private const val PREF_SEARCH_QUERY = "query"
 private const val LAST_PHOTO_ID = "id"
 private const val PREF_IS_POLLING = "isPolling"
+private const val PREF_GALLERY_TYPE = "galleryType"
 
-object QueryPreferences {
+object GalleryPreferences {
 
+    //region Query
     fun getStoredQuery(context: Context): String {
         val preference: SharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(context)
@@ -39,7 +42,9 @@ object QueryPreferences {
             .putString(LAST_PHOTO_ID, lastPhotoId)
             .apply()
     }
+    //endregion
 
+    //region Polling
     fun isPolling(context: Context): Boolean {
         return PreferenceManager
             .getDefaultSharedPreferences(context)
@@ -53,4 +58,23 @@ object QueryPreferences {
             .putBoolean(PREF_IS_POLLING, isPolling)
             .apply()
     }
+    //endregion
+
+    //region Gallery
+    fun getGalleryType(context: Context): GalleryType {
+        val galleryString = PreferenceManager
+            .getDefaultSharedPreferences(context)
+            .getString(PREF_GALLERY_TYPE, "")
+
+        return GalleryType.toGalleryType(galleryString)
+    }
+
+    fun setGalleryType(context: Context, galleryType: GalleryType) {
+        PreferenceManager
+            .getDefaultSharedPreferences(context)
+            .edit()
+            .putString(PREF_GALLERY_TYPE, galleryType.toString())
+            .apply()
+    }
+    //endregion
 }
