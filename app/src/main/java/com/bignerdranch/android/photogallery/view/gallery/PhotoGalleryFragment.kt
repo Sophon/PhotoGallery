@@ -14,6 +14,7 @@ import com.bignerdranch.android.photogallery.model.GalleryType
 import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
 import com.bignerdranch.android.photogallery.view.VisibleFragment
 import com.bignerdranch.android.photogallery.viewModel.gallery.PhotoGalleryViewModel
+import timber.log.Timber
 
 class PhotoGalleryFragment: VisibleFragment() {
 
@@ -147,5 +148,11 @@ class PhotoGalleryFragment: VisibleFragment() {
         val inputMethodManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    public fun switchGalleryTo(galleryType: GalleryType) {
+        Timber.d("Gallery: switching galleries")
+
+        photoGalleryViewModel.switchGalleryTo(galleryType)
     }
 }

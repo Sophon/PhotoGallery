@@ -137,4 +137,9 @@ class PhotoGalleryViewModel(private val app: Application): AndroidViewModel(app)
         galleryTypeLiveData.value = newType
     }
 
+    fun switchGalleryTo(newGalleryType: GalleryType) {
+        GalleryPreferences.setGalleryType(app, newGalleryType)
+        galleryTypeLiveData.value = newGalleryType
+    }
+
 }

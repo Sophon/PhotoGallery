@@ -16,19 +16,7 @@ private lateinit var binding: ActivityPhotoGalleryBinding
 class PhotoGalleryActivity : AppCompatActivity() {
 
     private val galleryType = MutableLiveData<GalleryType>(GalleryType.ONLINE)
-
-    private val bottomNavItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        when(item.itemId) {
-            R.id.botNav_web -> {
-                galleryType.value = GalleryType.ONLINE
-            }
-            else -> {
-                galleryType.value = GalleryType.FAVORITES
-            }
-        }
-
-        true
-    }
+    private val galleryFragment = PhotoGalleryFragment()
 
     companion object {
         fun newIntent(context: Context): Intent {
@@ -44,21 +32,31 @@ class PhotoGalleryActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-//        val isFragmentContainerEmpty = (savedInstanceState == null)
-//        if(isFragmentContainerEmpty) {
-//            supportFragmentManager
-//                .beginTransaction()
-//                .add(R.id.fragmentContainer, PhotoGalleryFragment(galleryType))
-//                .commit()
-//        }
+        binding.navigation.setOnNavigationItemSelectedListener { item ->
+            when(item.itemId) {
+                R.id.botNav_web -> {
+                    galleryType.value = GalleryType.ONLINE
+                }
+                else -> {
+                    galleryType.value = GalleryType.FAVORITES
+                }
+            }
+
+            true
+        }
+
+        val isFragmentContainerEmpty = (savedInstanceState == null)
+        if(isFragmentContainerEmpty) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragmentContainer, galleryFragment)
+                .commit()
+        }
 
         galleryType.observe(
             this,
             Observer { galleryType ->
-                supportFragmentManager
-                    .beginTransaction()
-                    .add(R.id.fragmentContainer, PhotoGalleryFragment(galleryType))
-                    .commit()
+                galleryFragment.switchGalleryTo(galleryType)
             }
         )
     }
