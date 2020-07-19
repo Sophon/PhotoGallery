@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.bignerdranch.android.photogallery.databinding.ActivityPhotoGalleryBinding
 import com.bignerdranch.android.photogallery.model.GalleryType
+import com.bignerdranch.android.photogallery.sharedPreferences.GalleryPreferences
 import com.bignerdranch.android.photogallery.view.gallery.PhotoGalleryFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -24,7 +25,6 @@ class PhotoGalleryActivity : AppCompatActivity() {
         }
     }
 
-    //region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,8 +32,15 @@ class PhotoGalleryActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        binding.navigation.setOnNavigationItemSelectedListener { item ->
-            when(item.itemId) {
+        setupBottomNavigation(binding.navigation)
+
+        setupGallery(savedInstanceState == null)
+    }
+
+    //region UI setup
+    private fun setupBottomNavigation(navigationView: BottomNavigationView) {
+        navigationView.setOnNavigationItemSelectedListener { navigationItem ->
+            when(navigationItem.itemId) {
                 R.id.botNav_web -> {
                     galleryType.value = GalleryType.ONLINE
                 }
@@ -45,7 +52,14 @@ class PhotoGalleryActivity : AppCompatActivity() {
             true
         }
 
-        val isFragmentContainerEmpty = (savedInstanceState == null)
+        navigationView.selectedItemId =
+            when(GalleryPreferences.getGalleryType(this)) {
+                GalleryType.ONLINE -> R.id.botNav_web
+                else -> R.id.botNav_favorites
+            }
+    }
+
+    private fun setupGallery(isFragmentContainerEmpty: Boolean) {
         if(isFragmentContainerEmpty) {
             supportFragmentManager
                 .beginTransaction()
