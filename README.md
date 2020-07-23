@@ -11,6 +11,8 @@ This app uses:
 - notifications, Workers and SharedPreferences
 - UI with overflow menu and bottom navigation panel
 
+<img src="/image/gallery.gif" width="270" height="555">
+
 TODO:
 
 ☐ tests - both unit tests and UI tests
