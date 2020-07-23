@@ -8,7 +8,7 @@ This app uses:
 - MVVM architecture with fragments, view models, LiveData and view binding
 - repository pattern for Room & Retrofit, view-holder pattern for RecyclerView
 - Room, Picasso, Retrofit, Gson, Timber
-- notifications, Workers and SharedPreferences
+- SearchView, notifications, Workers and SharedPreferences
 - UI with overflow menu and bottom navigation panel
 
 <img src="/image/gallery.gif" width="270" height="555">
