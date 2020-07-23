@@ -11,7 +11,7 @@ android:layout_height="match_parent">
         android:id="@+id/fragmentContainer"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        tools:context=".PhotoGalleryActivity"
+        tools:context=".features.photoGallery.PhotoGalleryActivity"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/navigation"/>
 
