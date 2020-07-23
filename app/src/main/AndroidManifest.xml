@@ -10,7 +10,7 @@
     <uses-permission android:name="com.bignerdranch.android.photogallery.PRIVATE" />
 
     <application
-        android:name=".PhotoGalleryApplication"
+        android:name=".app.PhotoGalleryApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -19,17 +19,17 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".PhotoGalleryActivity">
+            android:name=".features.photoGallery.PhotoGalleryActivity">
             <intent-filter android:priority="-999">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".view.webContent.PhotoPageActivity" />
+        <activity android:name=".features.photoPage.PhotoPageActivity" />
 
         <receiver
-            android:name=".receivers.NotificationReceiver"
+            android:name=".features.notifications.NotificationReceiver"
             android:permission="com.bignerdranch.android.photogallery.PRIVATE"
             android:exported="false">
             <intent-filter>
